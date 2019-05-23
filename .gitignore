@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+# Boos library
+boost/
+
+# Ejecutables
+dfs
