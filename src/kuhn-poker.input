@@ -1,0 +1,19 @@
+// Juego de Kunh Poker
+// History = sequence<Action>
+Name: KuhnPoker
+
+enum Card {Q, K, A}
+
+enum Action {pass, bet}
+
+Properties:
+    set <Card> deck = {Q, K, A}
+
+State:
+    sequence <Card> cards (deal 2 from deck)
+
+InformationSet:
+    Card card
+    History 
+
+

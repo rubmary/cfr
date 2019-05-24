@@ -6,11 +6,12 @@ using namespace std;
 template <
     typename State,
     typename Action,
-    typename Properties
+    typename Properties,
+    typename Informationset
 >
 class DFS{
 public:
-    Game<State, Action, Properties> *game;
+    Game<State, Action, Properties, InformationSet> *game;
     void do_something() {
         game -> print();
     }
@@ -41,6 +42,6 @@ public:
 int main() {
     srand(time(NULL));
     KuhnPoker kuhn_poker;
-    DFS<State, Action, Properties> dfs({&kuhn_poker});
+    DFS<State, Action, Properties, InformationSet> dfs({&kuhn_poker});
     dfs.start_dfs();
 }

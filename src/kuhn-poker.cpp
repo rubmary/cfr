@@ -26,25 +26,28 @@ struct Properties {
     set<Card> deck{Q, K, A};
 };
 
+struct InformationSet {
+    Card card;
+    History history;
+    bool operator == (const InformationSet& inf_set) const {
+        return card == inf_set.card && history == inf_set.history;
+    }
+};
+
 struct Hash
 {
-    size_t operator()(State const& state) const noexcept
+    size_t operator()(InformationSet const& inf_set) const noexcept
     {
-        size_t hash = boost::hash_range(state.history.begin(), state.history.end());
-        boost::hash_combine(hash, state.cards[state.player - 1]);
+        size_t hash = 0;
+        for (int i = 0; i < inf_set.history.size(); i++) {
+            boost::hash_combine(hash, inf_set.history[i]);
+        }
+        boost::hash_combine(hash, inf_set.card);
         return hash;
     }
 };
 
-struct Equal
-{
-    bool operator() (const State& s1, const State& s2) const {
-        return  s1.history == s2.history &&
-                s1.cards[s1.player - 1] == s2.cards[s2.player - 1];
-    }
-};
-
-class KuhnPoker : public Game<State, Action, Properties>
+class KuhnPoker : public Game<State, Action, Properties, InformationSet>
 {
 private:
     void deal_deck() {
@@ -56,17 +59,24 @@ private:
             state.cards[i] = deck[i];
     }
 public:
-    unordered_map<State, int, Hash, Equal> I;
+    unordered_map<InformationSet, int, Hash> I;
     
     void initial_state() {
         deal_deck();
         state.player = 1;
     }
 
-    int information_set() {
-        if(I[state] == 0)
-            I[state] = ++information_sets;
-        return I[state];
+    InformationSet information_set() {
+        Card card = state.cards[player() - 1];
+        InformationSet inf_set({card, state.history});
+        return inf_set;
+    }
+
+    int information_set_id() {
+        InformationSet inf_set = information_set();
+        if(I.find(inf_set) == I.end())
+            I[inf_set] = ++information_sets;
+        return I[inf_set];
     }
 
     void change_player() {
