@@ -1,6 +1,6 @@
-#include "kuhn-poker.cpp"
 #include <cstdlib>
 #include <ctime>
+#include <games/KuhnPoker.hpp>
 using namespace std;
 
 template <
