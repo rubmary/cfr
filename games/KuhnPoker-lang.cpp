@@ -57,6 +57,14 @@ void KuhnPoker::revert_state() {
     /******* COMPLETAR *******/
 }
 
+bool KuhnPoker::is_chance() {
+    /******* COMPLETAR *******/
+}
+
+vector<double> KuhnPoker::distribution() {
+    /******* COMPLETAR *******/
+}
+
 bool KuhnPoker::terminal_state() {
     /******* COMPLETAR *******/
 }

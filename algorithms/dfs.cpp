@@ -19,10 +19,10 @@ public:
     void dfs(){
 
         if(game -> terminal_state()){
-            do_something();
+            // do_something();
             return;
         }
-
+        do_something();
         Action action = game -> first_action();
         while(true) {
             game -> update_state(action);
@@ -43,5 +43,7 @@ int main() {
     srand(time(NULL));
     KuhnPoker kuhn_poker;
     DFS<State, Action, Properties, InformationSet> dfs({&kuhn_poker});
-    dfs.start_dfs();
+    for (int i = 0; i < 10; i++){
+        dfs.start_dfs();
+    }
 }

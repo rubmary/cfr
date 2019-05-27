@@ -4,6 +4,9 @@
     incompleta
 */
 
+#include <vector>
+using namespace std;
+
 template <
     typename State,
     typename Action,
@@ -30,6 +33,10 @@ public:
     // nodo o no
     virtual bool last_action(const Action& action) = 0;
 
+    // Determina el numero de acciones posibles en un nodo
+    // dado
+    virtual int actions() = 0;
+
     // Actualiza el estado actual aplicando la accion
     virtual void update_state(const Action &action) = 0;
 
@@ -46,6 +53,12 @@ public:
 
     // Retorna el jugador del nodo actual
     virtual int player() = 0;
+
+    // Determina si un nodo es de azar o no
+    virtual bool is_chance() = 0;
+
+    // Retorna la distribucion de probabilidad de un nodo de azar
+    virtual vector<double> distribution() = 0;
 
     // Determina si un estado es terminal o no
     virtual bool terminal_state() = 0;

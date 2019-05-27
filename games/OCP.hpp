@@ -1,6 +1,6 @@
 /**
 *   Interfaz del juego
-*   KuhnPoker
+*   One Card Poker (OCP)
 */
 #include <vector>
 #include <set>
@@ -14,14 +14,12 @@
 #include <games/Game.hpp>
 using namespace std;
 
-enum Card { Q, K, A };
-
 enum Action { pass, bet };
 
 typedef vector <Action> History;
 
 struct Properties {
-    set<Card> deck{Q, K, A};
+    int cards;  // Number of cards
 };
 
 struct State {
@@ -56,11 +54,11 @@ struct Hash
     }
 };
 
-class KuhnPoker : public Game<State, Action, Properties, InformationSet>
+class OCP : public Game<State, Action, Properties, InformationSet>
 {
     unordered_map<InformationSet, int, Hash> I;
     
-    void deal_deck();
+    OCP(int cards);
 
     int player();
 
