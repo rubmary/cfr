@@ -125,8 +125,8 @@ void KuhnPoker::print() {
     cout << endl;
     cout << "Conjunto de informacion" << endl;
     InformationSet inf_set = information_set();
-    cout << "Carta = " << inf_set.card << endl;
-    cout << "Historia = ";
+    cout << "\tCarta = " << inf_set.card << endl;
+    cout << "\tHistoria = ";
     for (int i = 0; i < inf_set.history.size(); i++)
         cout << (inf_set.history[i] ? "apostar" : "pasar") << ' ';
     cout << endl << endl;

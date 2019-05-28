@@ -19,11 +19,11 @@ enum Action { pass, bet };
 typedef vector <Action> History;
 
 struct Properties {
-    int cards;  // Number of cards
+    int N;
 };
 
 struct State {
-    vector <Card> cards;
+    vector <int> cards;
     History history;
     int player;
     bool operator == (const State& state) const {
@@ -34,7 +34,7 @@ struct State {
 };
 
 struct InformationSet {
-    Card card;
+    int card;
     History history;
     bool operator == (const InformationSet& inf_set) const {
         return card == inf_set.card && history == inf_set.history;
@@ -57,7 +57,9 @@ struct Hash
 class OCP : public Game<State, Action, Properties, InformationSet>
 {
     unordered_map<InformationSet, int, Hash> I;
-    
+
+public:
+
     OCP(int cards);
 
     int player();

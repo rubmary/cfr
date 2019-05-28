@@ -1,8 +1,7 @@
-#include <cstdlib>
-#include <ctime>
-#include <games/KuhnPoker.hpp>
-using namespace std;
+#include <games/Game.hpp>
 
+#ifndef CLASS_DFS
+#define CLASS_DFS
 template <
     typename State,
     typename Action,
@@ -35,12 +34,4 @@ public:
         dfs();
     }
 };
-
-int main() {
-    srand(time(NULL));
-    KuhnPoker kuhn_poker;
-    DFS<State, Action, Properties, InformationSet> dfs({&kuhn_poker});
-    for (int i = 0; i < 10; i++){
-        dfs.start_dfs();
-    }
-}
+#endif

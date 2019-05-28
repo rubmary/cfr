@@ -7,7 +7,7 @@
 using namespace std;
 
 OCP::OCP(int cards) {
-    properties.cards = cards;
+    properties.N = cards;
     srand(time(NULL));
 }
 
@@ -28,8 +28,8 @@ int OCP::information_set_id() {
 
 void OCP::initial_state() {
     state.cards.resize(2);
-    state.cards[0] = rand() % N;
-    state.cards[1] = rand() % (N-1);
+    state.cards[0] = rand() % properties.N;
+    state.cards[1] = rand() % (properties.N-1);
     if (state.cards[0] <= state.cards[1]){
         state.cards[1]++;
     }
@@ -37,7 +37,7 @@ void OCP::initial_state() {
 }
 
 InformationSet OCP::information_set() {
-    Card card = state.cards[player() - 1];
+    int card = state.cards[player() - 1];
     InformationSet inf_set({card, state.history});
     return inf_set;
 }
@@ -105,32 +105,25 @@ int OCP::utility() {
 }
 
 void OCP::print() {
-
-    // cout << "Repartir cartas:" << endl;
-    // cout << "\tJugador 1: " << state.cards[0] << endl;
-    // cout << "\tJugador 2: " << state.cards[1] << endl;
-
-    // cout << "Cartas: " << state.cards[0] << ' ' << state.cards[1] << endl;
-    // cout << "Jugador: " << player() << endl;
-    // cout << "Jugadas: ";
-    //  for (int i = 0; i < state.history.size(); i++)
-    //      cout << (state.history[i] ? "apostar" : "pasar") << ' ';
-    //  cout << endl;
-
-    // cout << "Conjunto de informacion: " << information_set_id() << endl;
-    // cout << "Ganancia: " << utility() << endl << endl;
-
     cout << "Jugador: " << player() << endl;
     cout << "Cartas = " << "(" << state.cards[0] << ',' << state.cards[1] << ")\n";
-    cout << "Historia = ";
+    cout << "Historia = ( ";
     for (int i = 0; i < state.history.size(); i++)
         cout << (state.history[i] ? "apostar" : "pasar") << ' ';
+    cout << ")" << endl;
+    
+
+    if(terminal_state()) {
+        cout << "Estado terminal. Utilidad: ";
+        cout << utility() << endl;
+    } else {
+        cout << "Conjunto de informacion" << endl;
+        InformationSet inf_set = information_set();
+        cout << "\tCarta = " << inf_set.card << endl;
+        cout << "\tHistoria = ( ";
+        for (int i = 0; i < inf_set.history.size(); i++)
+            cout << (inf_set.history[i] ? "apostar" : "pasar") << ' ';
+        cout << ")" << endl;
+    }
     cout << endl;
-    cout << "Conjunto de informacion" << endl;
-    InformationSet inf_set = information_set();
-    cout << "Carta = " << inf_set.card << endl;
-    cout << "Historia = ";
-    for (int i = 0; i < inf_set.history.size(); i++)
-        cout << (inf_set.history[i] ? "apostar" : "pasar") << ' ';
-    cout << endl << endl;
 }
