@@ -11,7 +11,7 @@
 #include <chrono>
 #include <boost/functional/hash.hpp>
 #include <iostream>
-#include <games/Game.hpp>
+#include "games/Game.hpp"
 using namespace std;
 
 enum Card { Q, K, A };

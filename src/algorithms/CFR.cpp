@@ -159,13 +159,3 @@ vector <vector<double>> CFR<State, Action, Properties, InformationSet>::regret()
 {
     return R;
 }
-
-template <
-    typename State,
-    typename Action,
-    typename Properties,
-    typename InformationSet
->
-void CFR<State, Action, Properties, InformationSet>::test(){
-    cout << "HOLA" << endl;
-}

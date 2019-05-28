@@ -3,8 +3,8 @@
 #include <fstream>
 #include <vector>
 #include <iomanip>
-#include <algorithms/CFR.cpp>
-#include <games/KuhnPoker.hpp>
+#include "algorithms/CFR.cpp"
+#include "games/KuhnPoker/KuhnPoker.hpp"
 using namespace std;
 
 int iterations = 1000000;
