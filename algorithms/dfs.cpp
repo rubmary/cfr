@@ -17,12 +17,9 @@ public:
     }
 
     void dfs(){
-
-        if(game -> terminal_state()){
-            // do_something();
-            return;
-        }
         do_something();
+        if(game -> terminal_state())
+            return;
         Action action = game -> first_action();
         while(true) {
             game -> update_state(action);
@@ -33,12 +30,12 @@ public:
             action = game -> next_action(action);
         }
     }
-
     void start_dfs() {
         game -> initial_state();
         dfs();
     }
 };
+
 int main() {
     srand(time(NULL));
     KuhnPoker kuhn_poker;

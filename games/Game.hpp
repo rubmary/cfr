@@ -7,6 +7,9 @@
 #include <vector>
 using namespace std;
 
+#ifndef CLASS_ABSTRACT_GAME
+#define CLASS_ABSTRACT_GAME
+
 template <
     typename State,
     typename Action,
@@ -70,3 +73,4 @@ public:
     // Imprime cosas para testing
     virtual void print() = 0;
 };
+#endif

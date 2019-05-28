@@ -1,5 +1,9 @@
-#include <games/KuhnPoker.hpp>
+#include <games/Game.hpp>
+#include <iostream>
+using namespace std;
 
+#ifndef CLASS_CFR
+#define CLASS_CFR
 /**
     Class CFR
     @EPS
@@ -13,7 +17,7 @@ template <
     typename State,
     typename Action,
     typename Properties,
-    typename Informationset
+    typename InformationSet
 >
 class CFR {
     double EPS;
@@ -63,9 +67,9 @@ class CFR {
         sea igual a 1
      */
     void normalize_strategy();
-public:
 
-    CFR(Game<State, Action, Properties, InformationSet> *g, eps = 1e-2) {
+public:
+    CFR(Game<State, Action, Properties, InformationSet> *g, double eps = 1e-2) {
         game = g;
         R = vector <vector <double>>(0);
         avg_s = vector <vector <double>>(0);
@@ -81,14 +85,14 @@ public:
         parametros
         @iterations:    numero de iteraciones
      */
-    vector <vector <double>> train(int iterations);
+    vector<vector<double>> train(int iterations);
 
     /**
         average_strategy
         estrategia
         @return:    la estrategia promedio
      */
-    vector <vector <double>> average_strategy();
+    vector<vector<double>> average_strategy();
 
     /**
         regret
@@ -96,3 +100,4 @@ public:
      */
     vector <vector <double>> regret();
 };
+#endif

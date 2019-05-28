@@ -1,8 +1,10 @@
 #include <cstdlib>
 #include <ctime>
-#include <algorithms/CFR.hpp>
 #include <fstream>
+#include <vector>
 #include <iomanip>
+#include <algorithms/CFR.cpp>
+#include <games/KuhnPoker.hpp>
 using namespace std;
 
 int iterations = 1000000;
@@ -14,7 +16,8 @@ int main(int argc, char **argv) {
 
     KuhnPoker kuhn_poker;
     CFR<State, Action, Properties, InformationSet> cfr({&kuhn_poker});
-    vector <vector <double>> regret     = cfr.train(iterations);
+    vector<vector<double>> regret     = cfr.train(iterations);
+    cfr.train(iterations);
     vector <vector <double>> strategy   = cfr.average_strategy();
 
     int M = strategy.size();

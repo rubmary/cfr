@@ -1,10 +1,16 @@
-#include <algorithms/CFR.hpp>
 #include <cmath>
 #include <cstdlib>
 #include <ctime>
+#include <iostream>
+#include "CFR.hpp"
 using namespace std;
 
-template <>
+template <
+    typename State,
+    typename Action,
+    typename Properties,
+    typename InformationSet
+>
 void CFR<State, Action, Properties, InformationSet>::update_strategy(int I, int N, double pi)
 {
     double sum_R = 0;
@@ -22,13 +28,23 @@ void CFR<State, Action, Properties, InformationSet>::update_strategy(int I, int 
         avg_s[I][a] += pi*strategy[I][a];
 }
 
-template <>
+template <
+    typename State,
+    typename Action,
+    typename Properties,
+    typename InformationSet
+>
 void CFR<State, Action, Properties, InformationSet>::initialize_game()
 {
     game -> initial_state();
 }
 
-template <>
+template <
+    typename State,
+    typename Action,
+    typename Properties,
+    typename InformationSet
+>
 double CFR<State, Action, Properties, InformationSet>::dfs(int i, double p1, double p2)
 {
     
@@ -73,7 +89,12 @@ double CFR<State, Action, Properties, InformationSet>::dfs(int i, double p1, dou
     return node_util;
 }
 
-template <>
+template <
+    typename State,
+    typename Action,
+    typename Properties,
+    typename InformationSet
+>
 void CFR<State, Action, Properties, InformationSet>::normalize_strategy()
 {
     int M = avg_s.size();
@@ -87,8 +108,13 @@ void CFR<State, Action, Properties, InformationSet>::normalize_strategy()
     }
 }
 
-template <>
-vector <vector <double>> CFR<State, Action, Properties, InformationSet>::train(int iterations)
+template <
+    typename State,
+    typename Action,
+    typename Properties,
+    typename InformationSet
+>
+vector<vector<double>> CFR<State, Action, Properties, InformationSet>::train(int iterations)
 {
     vector < vector <double> > Ri;
     for (int i = 0; i < iterations; i++) {
@@ -112,14 +138,34 @@ vector <vector <double>> CFR<State, Action, Properties, InformationSet>::train(i
     return Ri;
 }
 
-template <>
+template <
+    typename State,
+    typename Action,
+    typename Properties,
+    typename InformationSet
+>
 vector <vector<double>> CFR<State, Action, Properties, InformationSet>::average_strategy()
 {
     return avg_s;
 }
 
-template <>
+template <
+    typename State,
+    typename Action,
+    typename Properties,
+    typename InformationSet
+>
 vector <vector<double>> CFR<State, Action, Properties, InformationSet>::regret()
 {
     return R;
+}
+
+template <
+    typename State,
+    typename Action,
+    typename Properties,
+    typename InformationSet
+>
+void CFR<State, Action, Properties, InformationSet>::test(){
+    cout << "HOLA" << endl;
 }
