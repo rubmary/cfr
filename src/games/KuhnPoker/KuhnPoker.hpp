@@ -90,7 +90,7 @@ class KuhnPoker : public Game<State, Action, Properties, InformationSet>
 
     vector <double> distribution();
 
-    int utility();
+    double utility();
 
     void print();
 };

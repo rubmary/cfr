@@ -6,7 +6,7 @@ template <
     typename State,
     typename Action,
     typename Properties,
-    typename Informationset
+    typename InformationSet
 >
 class DFS{
 public:

@@ -96,7 +96,7 @@ public:
     * Retorna la ganancia del primer jugador
     * dado un estado terminal
     */
-    virtual int utility() = 0;
+    virtual double utility() = 0;
 
     /*
     * Imprime cosas para testing

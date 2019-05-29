@@ -87,7 +87,7 @@ bool KuhnPoker::terminal_state() {
     return false;
 }
 
-int KuhnPoker::utility() {
+double KuhnPoker::utility() {
     vector<int>bets(2, 1);
     for (int i = 0; i < state.history.size(); i++) {
         if(state.history[i] == bet)
@@ -98,7 +98,7 @@ int KuhnPoker::utility() {
     Action pe   = state.history[N-2];
     if(pe == bet && last == pass)
         return (player() == 1 ? 1 : -1)*bets[player()&1];
-    return state.cards[0] > state.cards[1] ? bets[1] : -bets[0];
+    return (double) (state.cards[0] > state.cards[1] ? bets[1] : -bets[0]);
 }
 
 void KuhnPoker::print() {
