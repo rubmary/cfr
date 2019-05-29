@@ -131,11 +131,18 @@ double Dudo::utility() {
     else
         winner = (player()&1) + 1;
     dice = max(abs(dice), 1);
-    if(winner == 1)
-        D1 = max(0, D1 - dice);
-    else
+
+    double sign = 1;
+    if(winner == 1) {
         D2 = max(0, D2 - dice);
-    return properties.dudos[D1][D2];
+        swap(D1, D2);
+        sign = -1;
+    }
+    else {
+        D1 = max(0, D1 - dice);
+    }
+
+    return sign*properties.dudos[D1][D2];
 }
 
 void Dudo::print() {
