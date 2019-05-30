@@ -1,6 +1,6 @@
 #include <cstdlib>
 #include <ctime>
-#include "games/Dudo/Dudo.hpp"
+#include "games/Domino/Domino.hpp"
 #include "algorithms/DFS.cpp"
 using namespace std;
 

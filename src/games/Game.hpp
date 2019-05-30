@@ -102,5 +102,12 @@ public:
     * Imprime cosas para testing
     */
     virtual void print() = 0;
+
+    /**
+    * Imprime el conjunto de informacion
+    */
+    virtual string print_information_set() {
+        return "";
+    }
 };
 #endif
