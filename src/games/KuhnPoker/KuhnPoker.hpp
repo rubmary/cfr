@@ -14,6 +14,8 @@
 #include "games/Game.hpp"
 using namespace std;
 
+namespace kuhn_poker
+{
 enum Card { Q, K, A };
 
 enum Action { pass, bet };
@@ -94,3 +96,4 @@ class KuhnPoker : public Game<State, Action, Properties, InformationSet>
 
     void print();
 };
+}

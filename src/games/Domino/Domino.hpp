@@ -22,7 +22,13 @@ typedef pair<short int, short int> Piece;
 struct Action {
     Piece taken;
     Piece placed;
-    string side;
+    char side;
+    char face; // Actualizar
+    bool operator == (Action const& action) const {
+        return  taken == action.taken &&
+                placed == action.placed &&
+                side == action.side;
+    }
 };
 
 typedef vector<Action>History;
@@ -34,11 +40,8 @@ struct Properties {
 
 struct State {
     vector<Piece> pack;
-    vector<vector<Piece>> hands;
-    Piece take;
-    bool will_take;
+    vector<set<Piece>> hands;
     int left, right;
-    vector<short int>history_key;
     History history;
     int player;
 };
@@ -65,9 +68,14 @@ struct Hash {
 
 class Domino : public Game<State, Action, Properties, InformationSet>
 {
-public:
     unordered_map<InformationSet, int, Hash> I;
 
+    bool place_to_left(const Piece& piece);
+
+    bool place_to_right(const Piece& piece);
+
+    bool will_take();
+public:
     Domino(int max_point, int initial_hand);
 
     int player();
@@ -76,7 +84,7 @@ public:
 
     void initial_state();
 
-    InformationSet information_set();
+    virtual InformationSet information_set();
 
     Action first_action();
 
