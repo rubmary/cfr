@@ -23,7 +23,7 @@ struct Action {
     Piece taken;
     Piece placed;
     char side;
-    char face; // Actualizar
+    char face;
     bool operator == (Action const& action) const {
         return  taken == action.taken &&
                 placed == action.placed &&
@@ -70,11 +70,14 @@ class Domino : public Game<State, Action, Properties, InformationSet>
 {
     unordered_map<InformationSet, int, Hash> I;
 
-    bool place_to_left(const Piece& piece);
+    int place_to_left(const Piece& piece);
 
-    bool place_to_right(const Piece& piece);
+    int place_to_right(const Piece& piece);
 
     bool will_take();
+
+    int count_points(const set<Piece> &hand);
+
 public:
     Domino(int max_point, int initial_hand);
 
@@ -87,6 +90,8 @@ public:
     virtual InformationSet information_set();
 
     Action first_action();
+
+    Action next_action(set<Piece>::iterator first);
 
     Action next_action(const Action& action);
 

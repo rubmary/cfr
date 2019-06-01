@@ -62,91 +62,122 @@ bool Domino::will_take() {
     return false;
 }
 
-/** TERMINAR **/
+// Los ultimos tres bytes representan la primera cara
+// los siguientes tres la segunda
+byte piece_mask(Piece piece) {
+    byte mask = byte{0};
+    mask |= byte{(unsigned char) piece.first};
+    mask |= byte{(unsigned char) (piece.second << 3)};
+    return mask;
+}
+
 InformationSet Domino::information_set()
 {
     int p = player() - 1;
-    vector<short int> history ;//= state.history_key;
+    // history
+    vector<short int> history(state.history.size(), 0);
+    for(int i = 0; i < history.size(); i++) {
+        Action action = state.history[i];
+        if(action.side != 'n') {
+            history[i] |= (1<<6); // El septimo bit indica si paso o no el jugador
+            history[i] |= (int) piece_mask(action.placed)<<8;
+            if(action.side == 'r') // El bit quince representa de que lado se jugo
+                history[i] |= (1<<14);
+        }
+        if(action.taken != Piece({-1, -1})) {
+            history[i] |= (1<<7); // El octavo bit indica si se tomo ficha o no
+            history[i] |= (int) piece_mask(action.taken);
+        }
+    }
+    for(int i = p; i < history.size(); i+=2) // borrar las fichas tomadas del oponente
+        history[i] &= ~((1<<6)-1);
+
+    // tanken_mask
     Piece taken_piece = state.pack[state.pack.size()-1];
     byte taken_mask = byte{0};
     if(will_take()) {
-        taken_mask |= byte{1};
-        taken_mask |= byte{taken_piece.first}<<1;
-        taken_mask |= byte{taken_piece.second}<<4;
+        taken_mask = piece_mask(taken_piece);
+        taken_mask |= byte{1<<6};
     }
-    for(int i = p; i < history.size(); i+=2)
-        history[i] &= ~((1<<6)-1);
+    // hand
     vector<byte>hand(state.hands[p].size(), byte{0});
-    
     int i = 0;
     for (auto piece : state.hands[p]) {
-        hand[i] |= byte{piece.first};
-        hand[i] |= byte{piece.second << 3};
+        hand[i++] = piece_mask(piece);
     }
-
     return InformationSet({history, hand, taken_mask});
 }
 
-
-bool Domino::place_to_left(const Piece& piece) {
-    return piece.first == state.left || piece.second == state.right;
+int Domino::place_to_left(const Piece& piece) {
+    if(piece.first == state.left) {
+        return piece.second;
+    }
+    if(piece.second == state.right) {
+        return piece.first;
+    }
+    return -1;
 }
 
-bool Domino::place_to_right(const Piece& piece) {
-    return piece.first == state.right || piece.second == state.right;
+int Domino::place_to_right(const Piece& piece) {
+    if(piece.first == state.right){
+        return piece.second;
+    }
+    if(piece.second == state.right){
+        return piece.first;
+    }
+    return -1;
 }
 
-Action Domino::first_action()
-{
-    Piece taken_piece = state.pack[state.pack.size()-1];
-    Action action({{-1, -1}, {taken_piece}, 'l'});
-    for(auto piece : state.hands[player() - 1]) {
-        if(place_to_left(piece)){
+Action Domino::next_action(set<Piece>::iterator first) {
+    set<Piece> &hand = state.hands[player() - 1];
+    Action action({{-1, -1}, {-1, -1}, 'n', -1});
+    for(auto pos = first; pos != hand.end(); pos++) {
+        Piece piece = *pos;
+        action.face = place_to_left(piece);
+        if(action.face != -1) {
             action.placed = piece;
+            action.side = 'l';
             return action;
-        }else if (place_to_right(piece)){
+        }
+        action.face = place_to_right(piece);
+        if(action.face != -1) {
             action.placed = piece;
             action.side = 'r';
             return action;
         }
     }
-    action.taken = taken_piece;
-    if (place_to_left(taken_piece)) {
+    action.taken = state.pack[state.pack.size() - 1];
+    action.face = place_to_left(action.taken);
+    if (action.face != -1) {
+        action.placed = action.taken;
+        action.side = 'l';
         return action;
-    } else if (place_to_right(taken_piece)) {
+    }
+    action.face = place_to_right(action.taken);
+    if (action.face != -1) {
+        action.placed = action.taken;
         action.side = 'r';
         return action;
     }
-    return {{-1, -1}, {-1, -1}, 'n'};
+    return action;
+}
+
+Action Domino::first_action()
+{
+    return next_action(state.hands[player() - 1].begin());
 }
 
 Action Domino::next_action(const Action& action) {
     Action next = action;
-    if(action.side == 'l' && place_to_right(action.placed) && state.left != state.right) {
-        next.side = 'r';
-        return next;
-    }
-    set<Piece> &hand = state.hands[player() - 1];
-    set<Piece>::iterator first = hand.upper_bound(action.placed);
-    for(auto pos = first; pos != hand.end(); pos++) {
-        Piece piece = *pos;
-        if(place_to_left(piece)) {
-            next.placed = piece;
-            next.side = 'l';
-            return next;
-        } else if(place_to_right(piece)) {
-            next.placed = piece;
+    if(action.side == 'l') {
+        next.face = place_to_right(action.placed);
+        if(next.face != -1 && state.left !=state.right) {
             next.side = 'r';
             return next;
         }
     }
-    next.placed = action.taken;
-    if(place_to_left(action.taken)) {
-        next.side = 'l';
-    }else {
-        next.side = 'r';
-    }
-    return next;
+    set<Piece>::iterator first = state.hands[player()-1].upper_bound(action.placed);
+    return next_action(first);
 }
 
 bool Domino::last_action(const Action& action) {
@@ -154,70 +185,108 @@ bool Domino::last_action(const Action& action) {
         return true;
     }
     Action next = next_action(action);
-    if (next == action) {
+    if(next.side == 'n') {
         return true;
     }
-    if (next.side == 'l' && place_to_left(next.placed)) {
-        return false;
-    }
-    if(next.side == 'r' && place_to_right(next.placed)) {
-        return false;
-    }
-    return true;
+    return false;
 }
 
 int Domino::actions() {
     int total = 0;
     set<Piece> &hand = state.hands[player() - 1];
     for (auto piece : state.hands[player() - 1]) {
-        if(place_to_left(piece)){
+        if(place_to_left(piece) != -1 ) total++;
+        if (place_to_right(piece) != -1 && state.left != state.right)
             total++;
-        }
-        if (place_to_right(piece) && state.left != state.right) {
-            total++;
-        }
     }
     if (total == 0) {
         Piece taken_piece = state.pack[state.pack.size()-1];
-        if(place_to_left(taken_piece)){
+        if(place_to_left(taken_piece) != -1) total++;
+        if(place_to_right(taken_piece) != -1 && state.left != state.right)
             total++;
-        }
-        if(place_to_right(taken_piece) && state.left != state.right) {
-            total++;
-        }
     }
     return max(total, 1);
 }
 
 void Domino::update_state(Action const& action) {
+    set<Piece>&hand = state.hands[player() - 1];
     if(action.taken != Piece({-1, -1})) {
         state.pack.pop_back();
-        state.hands[player()-1].erase(action.taken);   
+        hand.insert(action.taken);
     }
     if(action.side != 'n') {
-        state.hands[player()-1].erase(action.placed);
+        hand.erase(action.placed);
         int &prev_head = action.side == 'l' ? state.left : state.right;
-        int new_head = action.placed.first == prev_head
-            ? action.placed.second
-            : action.placed.first;
-        prev_head = new_head;
+        prev_head = action.face;
     }
     state.history.push_back(action);
     change_player();
 }
 
-// Agregar el numero que coincidio en la accion para poder revertir
-// los estados left y right
 void Domino::revert_state() {
-    Action &last_action = state.history[state.history.size() - 1];
+    Action &action = state.history[state.history.size() - 1];
     set<Piece>&hand = state.hands[player() - 1];
-    if(last_action.taken != Action({-1, -1})) {
-        deck.push_back(last_action);
+    if(action.taken != Piece({-1, -1})) {
+        state.pack.push_back(action.taken);
     }
-    if(last_action.placed != Action({-1, -1})) {
-        hand.insert(last_action.placed);
+    if(action.side != 'n') {
+        Piece piece = action.placed;
+        hand.insert(action.placed);
+        int prev_head = action.face == piece.first
+            ? piece.first : piece.second;
+        if(action.side = 'l')
+            state.left = prev_head;
+        else
+            state.right = prev_head;
     }
-
     state.history.pop_back();
     change_player();
+}
+
+bool Domino::is_chance() {
+    return false;
+}
+
+vector<double> Domino::distribution() {
+    return vector<double>(0);
+}
+
+bool Domino::terminal_state() {
+    for(int i = 0; i < 2; i++) {
+        if (state.hands[i].empty())
+            return true;
+    }
+    int N = state.history.size();
+    if( N > 2 && state.history[N-1].side == 'n' && state.history[N-2].side == 'n')
+        return true;
+    return false;
+}
+
+int Domino::count_points(const set<Piece> &hand) {
+    int points = 0;
+    for(auto piece : hand) {
+        points += piece.first;
+        points += piece.second;
+    }
+    return points;
+}
+
+double Domino::utility() {
+    vector<int> points(2);
+    for (int i = 0; i < 2; i++)
+        points[i] = count_points(state.hands[i]);
+    if(state.hands[0].empty()) {
+        return points[1];
+    }
+    if(state.hands[1].empty()) {
+        return -points[2];
+    }
+    if (points[0] == points[1]) {
+        return 0;
+    }
+    return points[0] < points[1] ? points[1] : -points[0];
+}
+
+void Domino::print() {
+
 }
