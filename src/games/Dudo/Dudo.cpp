@@ -7,10 +7,7 @@
 using namespace dudo;
 
 Dudo::Dudo(int K, int D1, int D2, vector<vector<double>> &dudos) {
-    properties.K = K;
-    properties.D1 = D1;
-    properties.D2 = D2;
-    properties.dudos = dudos;
+    properties = Properties({K, D1, D2, dudos});
 }
 
 int Dudo::player() {
@@ -34,10 +31,10 @@ void Dudo::initial_state() {
     state.bidding_sequence = "";
     state.calls_bluff = false;
     state.dice.resize(2);
-    vector<int>lengths({properties.D1, properties.D2});
+    vector<int>dice_number({properties.D1, properties.D2});
     for (int i = 0; i < 2; i++) {
         state.dice[i].resize(properties.K);
-        for(int j = 0; j < lengths[i]; j++)
+        for(int j = 0; j < dice_number[i]; j++)
             state.dice[i][rand() % properties.K]++;
     }
 }
@@ -67,12 +64,13 @@ Action Dudo::next_action(const Action &action) {
     int quantity = action.quantity + (face==1);
     if(quantity > total_dice) {
         quantity = 0;
+        face = 0;
     }
     return Action({quantity, face});
 }
 
 bool Dudo::last_action(const Action &action) {
-    return action.quantity == 0;
+    return action.quantity == 0 && action.face == 0;
 }
 
 int Dudo::actions() {
@@ -126,10 +124,10 @@ double Dudo::utility() {
     if(bid.face != 0)
         total += state.dice[0][0] + state.dice[1][0];
     int winner, dice = bid.quantity - total;
-    if (dice >= 0)
-        winner = player();
-    else
+    if (dice > 0)
         winner = (player()&1) + 1;
+    else
+        winner = player();
     dice = max(abs(dice), 1);
 
     double sign = 1;
@@ -137,14 +135,31 @@ double Dudo::utility() {
         D2 = max(0, D2 - dice);
         swap(D1, D2);
         sign = -1;
-    }
-    else {
+    } else {
         D1 = max(0, D1 - dice);
     }
-
     return sign*properties.dudos[D1][D2];
 }
 
 void Dudo::print() {
+    if (state.bidding_sequence.empty()) {
+        for (int i = 0; i < 2; i++) {
+            cout << "Dados jugador " << i+1 << ": ";
+            for (int j = 0; j < properties.K; j++)
+                cout << state.dice[i][j] << ' ';
+            cout << endl;
+        }
+        cout << endl;
+    }
 
+    cout << "pujas " << state.bidding_sequence << ' ' << information_set().bidding_sequence << endl;
+    for (int i = 0; i < (int) state.history.size(); i++)
+        cout << "(" << state.history[i].quantity << ',' << state.history[i].face << ")" << ' ';
+    cout << endl;
+    cout << "Calls bluff " << state.calls_bluff << endl;
+    if(terminal_state()) {
+        double u = utility();
+        cout << "Utility: " << u << endl;
+    }
+    cout << endl;
 }

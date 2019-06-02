@@ -25,6 +25,13 @@ struct Action {
 typedef vector<Action>History;
 typedef vector<int>Dice;
 
+/**
+*
+* Properties
+* @K  : numero de caras del dado
+* @D1 : numero de dados del jugador 1
+* @D2 : numero de dados del jugador 2
+*/
 struct Properties {
     int K;
     int D1;
