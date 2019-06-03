@@ -34,49 +34,22 @@ int Domino::information_set_id() {
 void Domino::initial_state()
 {
     int N = (properties.max_point+1)*(properties.max_point+2)/2;
-    cout << "Numero total de fichas: " << N << endl;
     state.pack.resize(N);
     state.hands.resize(2);
     int k = 0;
-    cout << "Creando pack..." << endl;
     for(int i = 0; i <= properties.max_point; i++) {
         for (int j = i; j <= properties.max_point; j++) {
             state.pack[k++] = {i, j};
         }
     }
-    for(auto piece : state.pack) {
-        cout << "(" << piece.first << "," << piece.second << ") ";
-    }
-    cout << endl;
-    // unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    cout << "Barajando fichas..." << endl;
-    random_shuffle(state.pack.begin(), state.pack.end()); //, default_random_engine(seed));
-    for(auto piece : state.pack) {
-        cout << "(" << piece.first << "," << piece.second << ") ";
-    }
-    cout << endl;
-    cout << "Repartiendo fichas..." << endl;
-    for(int i = 0; i <2; i++) {
-        cout << "Jugador " << i + 1 << endl;
+    random_shuffle(state.pack.begin(), state.pack.end());
+    for(int i = 0; i < 2; i++) {
         state.hands[i].clear();
         for(int j = 0; j < properties.initial_hand; j++)
             state.hands[i].insert(state.pack[--k]);
     }
     state.pack.resize(k);
     state.history.clear();
-    cout << "Nuevo pack..." << endl;
-    for(auto piece : state.pack) {
-        cout << "(" << piece.first << "," << piece.second << ") ";
-    }
-    cout << endl;
-    cout << "Manos..." << endl;
-    for (int i = 0; i < 2; i++) {
-        cout << "Jugador " << i+1 << ": ";
-        for (auto piece : state.hands[i])
-            cout << "(" << piece.first  << ',' << piece.second << ") ";
-        cout << endl;
-    }
-    cout << endl;
     state.left = -1;
     state.right = -1;
     state.player = 1;
@@ -226,13 +199,12 @@ int Domino::actions() {
     int total = 0;
     set<Piece> &hand = state.hands[player() - 1];
     for (auto piece : state.hands[player() - 1]) {
-        if(place_to_left(piece)) total++;
-        if (place_to_right(piece) && state.left != state.right)
-            total++;
+        if (place_to_left(piece) ) total++;
+        if (place_to_right(piece)) total++;
     }
     if (total == 0) {
-        Piece taken_piece = state.pack[state.pack.size()-1];
-        if(place_to_left(taken_piece)) total++;
+        Piece &taken_piece = state.pack[state.pack.size()-1];
+        if(place_to_left(taken_piece))  total++;
         if(place_to_right(taken_piece)) total++;
     }
     return max(total, 1);
@@ -337,17 +309,22 @@ void Domino::print() {
     list<Piece> dominos(0);
     for (auto action : state.history) {
         Piece piece = action.placed;
-        if (action.side == 'l')
+        if (action.side == 'l'){
+            if(dominos.front().first == piece.first)
+                swap(piece.first, piece.second);
             dominos.push_front(piece);
-        if (action.side == 'r')
+        }
+        if (action.side == 'r'){
+            if(dominos.back().second == piece.second)
+                swap(piece.first, piece.second);
             dominos.push_back(piece);
+        }
     }
-    // cout << "Mesa: ";
-    // cout << state.history.size() << endl;
-    // for (auto domino : dominos) {
-    //     cout << "(" << domino.first << ',' << domino.second << ") ";
-    // }
-    // cout << endl;
+    cout << "Mesa: ";
+    for (auto domino : dominos) {
+        cout << "(" << domino.first << ',' << domino.second << ") ";
+    }
+    cout << endl;
     cout << "Fichas restantes: ";
     for (auto domino : state.pack) {
         cout << "(" << domino.first << ',' << domino.second << ") ";
@@ -355,14 +332,10 @@ void Domino::print() {
     cout << endl;
     cout << "left right = " << state.left << ' ' << state.right << endl;
     cout << "History:" << endl;
-    int k = 0;
     for (auto action : state.history) {
         cout << "(" << action.placed.first << "," << action.placed.second << ") ";
         cout << "(" << action.taken.first << "," << action.taken.second << ") ";
         cout << action.side << endl;
-        k++;
-        // if (k > 20)
-        //     break;
     }
     cout << endl << endl;
 }

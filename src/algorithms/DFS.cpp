@@ -1,7 +1,5 @@
 #include <games/Game.hpp>
 
-int k = 0;
-
 #ifndef CLASS_DFS
 #define CLASS_DFS
 template <
@@ -13,22 +11,14 @@ template <
 class DFS{
 public:
     Game<State, Action, Properties, InformationSet> *game;
-    bool cont;
     void do_something() {
         game -> print();
     }
 
     void dfs(){
-        k++;
-        // if (k > 30)
-        //     cont = false;
-        if (!cont)
-            return;
         do_something();
-        if(game -> terminal_state()){
-            // cont = false;
+        if(game -> terminal_state())
             return;
-        }
         Action action = game -> first_action();
         while(true) {
             game -> update_state(action);
