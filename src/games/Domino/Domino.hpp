@@ -23,7 +23,6 @@ struct Action {
     Piece taken;
     Piece placed;
     char side;
-    char face;
     bool operator == (Action const& action) const {
         return  taken == action.taken &&
                 placed == action.placed &&
@@ -70,9 +69,11 @@ class Domino : public Game<State, Action, Properties, InformationSet>
 {
     unordered_map<InformationSet, int, Hash> I;
 
-    int place_to_left(const Piece& piece);
+    bool place_to_left(const Piece& piece);
 
-    int place_to_right(const Piece& piece);
+    bool place_to_right(const Piece& piece);
+
+    int opposite(int number, const Piece& piece);
 
     bool will_take();
 
