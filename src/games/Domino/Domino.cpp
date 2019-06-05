@@ -1,7 +1,6 @@
 /**
 * Implementacion de la clase Domino
 */
-
 #include "Domino.hpp"
 #include <cstdlib>
 #include <ctime>
@@ -126,7 +125,7 @@ bool Domino::place_to_right(const Piece& piece) {
     if (state.history.empty() || state.left == state.right)
         return false;
 
-    return  piece.first == state.right ||
+    return  piece.first  == state.right ||
             piece.second == state.right;
 }
 

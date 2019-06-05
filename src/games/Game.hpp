@@ -9,7 +9,6 @@ using namespace std;
 
 #ifndef CLASS_ABSTRACT_GAME
 #define CLASS_ABSTRACT_GAME
-
 template <
     typename State,
     typename Action,
@@ -22,8 +21,25 @@ public:
     Properties properties;
     int information_sets = 0;
 
+    /**
+    * Primer estado inicial del juego
+    */
+    virtual void first_state() = 0;
+
+    /**
+    * Siguiente estado inicial
+    */
+    virtual void next_state() = 0;
+
+    /**
+    * Determina si es el ultimo estado
+    * inicial
+    */
+    virtual bool valid_state() = 0;
+
     /** 
     * Inicializar el estado en una partida
+    * de forma aleatoria
     **/
     virtual void initial_state() = 0;
 
@@ -45,10 +61,9 @@ public:
     virtual bool last_action(const Action& action) = 0;
 
     /**
-    * Determina el numero de acciones posibles en un nodo
-    * dado
+    * Retorna las acciones posibles en un estado
     */
-    virtual int actions() = 0;
+    virtual vector<Action> actions() = 0;
 
     /**
     * Actualiza el estado actual aplicando la accion
@@ -73,19 +88,15 @@ public:
     virtual int information_set_id() = 0;
 
     /**
+    * Retorna un vector con los conjuntos de informacion
+    * descubiertos del jugador i
+    */
+    virtual vector<int> information_sets_number(int player) = 0;
+
+    /**
     * Retorna el jugador del nodo actual
     */
     virtual int player() = 0;
-
-    /**
-    * Determina si un nodo es de azar o no
-    */
-    virtual bool is_chance() = 0;
-
-    /**
-    * Retorna la distribucion de probabilidad de un nodo de azar
-    */
-    virtual vector<double> distribution() = 0;
 
     /**
     * Determina si un estado es terminal o no
