@@ -23,25 +23,8 @@ void Domino::change_player()
     state.player = (state.player&1) + 1;
 }
 
-int Domino::information_set_id() {
-    InformationSet inf_set = information_set();
-    if(I.find(inf_set) == I.end())
-        I[inf_set] = information_sets++;
-    return I[inf_set];
-}
-
-void Domino::initial_state()
-{
-    int N = (properties.max_point+1)*(properties.max_point+2)/2;
-    state.pack.resize(N);
-    state.hands.resize(2);
-    int k = 0;
-    for(int i = 0; i <= properties.max_point; i++) {
-        for (int j = i; j <= properties.max_point; j++) {
-            state.pack[k++] = {i, j};
-        }
-    }
-    random_shuffle(state.pack.begin(), state.pack.end());
+void Domino::deal_cards() {
+    int k = state.pack.size();
     for(int i = 0; i < 2; i++) {
         state.hands[i].clear();
         for(int j = 0; j < properties.initial_hand; j++)
@@ -52,6 +35,39 @@ void Domino::initial_state()
     state.left = -1;
     state.right = -1;
     state.player = 1;
+}
+
+void Domino::create_pack() {
+    int N = (properties.max_point+1)*(properties.max_point+2)/2;
+    state.pack.resize(N);
+    state.hands.resize(2);
+    int k = 0;
+    for(int i = 0; i <= properties.max_point; i++) {
+        for (int j = i; j <= properties.max_point; j++) {
+            state.pack[k++] = {i, j};
+        }
+    }
+}
+void Domino::initial_state()
+{
+    create_pack();
+    random_shuffle(state.pack.begin(), state.pack.end());
+    deal_cards();
+}
+
+void Domino::first_state()
+{
+    create_pack();
+    deal_cards();
+}
+
+bool Domino::next_state()
+{
+    if(!next_permutation(state.pack.begin(), state.pack.end())) {
+        return false;
+    }
+    deal_cards();
+    return false;
 }
 
 bool Domino::will_take() {
@@ -133,80 +149,33 @@ int Domino::opposite(int number, const Piece& piece) {
     return piece.first == number ? piece.second : piece.first;
 }
 
-Action Domino::next_action(set<Piece>::iterator first) {
-    set<Piece> &hand = state.hands[player() - 1];
-    Action action({{-1, -1}, {-1, -1}, 'n'});
-    for(auto pos = first; pos != hand.end(); pos++) {
-        Piece piece = *pos;
-        if(place_to_left(piece)) {
-            action.placed = piece;
-            action.side = 'l';
-            return action;
+vector<Action> Domino::actions() {
+    vector<Action> A;
+    for (auto piece : state.hands[player()-1]) {
+        if (place_to_left(piece)) {
+            A.push_back(Action({{-1, -1}, piece, 'l'}));
         }
-        if(place_to_right(piece)) {
-            action.placed = piece;
-            action.side = 'r';
-            return action;
+        if (place_to_right(piece)) {
+            A.push_back(Action({{-1, -1}, piece, 'r'}));
         }
     }
-    return action;
-}
-
-Action Domino::first_action()
-{
-    Action action = next_action(state.hands[player() - 1].begin());
-    if (action.side == 'n' && !state.pack.empty()) {
-        action.taken = state.pack[state.pack.size() - 1];
-        if (place_to_left(action.taken)) {
-            action.placed = action.taken;
-            action.side = 'l';
-            return action;
+    if (A.empty()) {
+        Piece piece = Piece({-1, -1});
+        int r = state.pack.size();
+        if (r > 0) {
+            piece = state.pack[r-1];
+            if(place_to_left(piece)) {
+                A.push_back({piece, piece, 'l'});
+            }
+            if(place_to_right(piece)) {
+                A.push_back({piece, piece, 'r'});
+            }
         }
-        if (place_to_right(action.taken)) {
-            action.placed = action.taken;
-            action.side = 'r';
-            return action;
+        if (A.empty()) {
+            A.push_back({piece, {-1, -1}, 'n'});
         }
     }
-    return action;
-}
-
-Action Domino::next_action(const Action& action) {
-    Action next = action;
-    if(action.side == 'l' && place_to_right(action.placed)) {
-        next.side = 'r';
-        return next;
-    }
-    if (action.taken != Piece({-1, -1}))
-        return Action({{-1, -1}, {-1, -1}, 'n'});
-    set<Piece>::iterator first = state.hands[player()-1].upper_bound(action.placed);
-    return next_action(first);
-}
-
-bool Domino::last_action(const Action& action) {
-    if(action.side == 'n') {
-        return true;
-    }
-    Action next = next_action(action);
-    if(next.side == 'n') {
-        return true;
-    }
-    return false;
-}
-
-int Domino::actions() {
-    int total = 0;
-    set<Piece> &hand = state.hands[player() - 1];
-    for (auto piece : state.hands[player() - 1]) {
-        if (place_to_left(piece) ) total++;
-        if (place_to_right(piece)) total++;
-    }
-    if (total == 0) {
-        Piece &taken_piece = state.pack[state.pack.size()-1];
-        if(place_to_left(taken_piece))  total++;
-        if(place_to_right(taken_piece)) total++;
-    }
-    return max(total, 1);
+    return A;
 }
 
 void Domino::update_state(Action const& action) {
@@ -253,14 +222,6 @@ void Domino::revert_state() {
     state.history.pop_back();
 }
 
-bool Domino::is_chance() {
-    return false;
-}
-
-vector<double> Domino::distribution() {
-    return vector<double>(0);
-}
-
 bool Domino::terminal_state() {
     for(int i = 0; i < 2; i++) {
         if (state.hands[i].empty())
@@ -281,20 +242,30 @@ int Domino::count_points(const set<Piece> &hand) {
     return points;
 }
 
-double Domino::utility() {
+double Domino::utility(int i) {
     vector<int> points(2);
     for (int i = 0; i < 2; i++)
         points[i] = count_points(state.hands[i]);
+    int u, winner;
     if(state.hands[0].empty()) {
-        return points[1];
+        u = points[1];
+        winner = 1;
+    } else if(state.hands[1].empty()) {
+        u = points[2];
+        winner = 2;
+    }else if (points[0] == points[1]) {
+        u = 0;
+        winner = 1;
+    }else {
+        if(points[0] < points[1]) {
+            u = points[1];
+            winner = 1;
+        }else{
+            u = points[0];
+            winner = 2;
+        }
     }
-    if(state.hands[1].empty()) {
-        return -points[2];
-    }
-    if (points[0] == points[1]) {
-        return 0;
-    }
-    return points[0] < points[1] ? points[1] : -points[0];
+    return (winner == i ? 1 : -1)*u;
 }
 
 void Domino::print() {

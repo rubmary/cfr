@@ -65,10 +65,8 @@ struct Hash {
     }
 };
 
-class Domino : public Game<State, Action, Properties, InformationSet>
+class Domino : public Game<State, Action, Properties, InformationSet, Hash>
 {
-    unordered_map<InformationSet, int, Hash> I;
-
     bool place_to_left(const Piece& piece);
 
     bool place_to_right(const Piece& piece);
@@ -79,6 +77,10 @@ class Domino : public Game<State, Action, Properties, InformationSet>
 
     int count_points(const set<Piece> &hand);
 
+    void deal_cards();
+
+    void create_pack();
+
 public:
     Domino(int max_point, int initial_hand);
 
@@ -88,31 +90,21 @@ public:
 
     void initial_state();
 
+    void first_state();
+
+    bool next_state();
+
     virtual InformationSet information_set();
 
-    Action first_action();
-
-    Action next_action(set<Piece>::iterator first);
-
-    Action next_action(const Action& action);
-
-    bool last_action(const Action& action);
-
-    int actions();
+    vector<Action> actions();
 
     void update_state(const Action &action);
 
     void revert_state();
 
-    int information_set_id();
-
     bool terminal_state();
 
-    bool is_chance();
-
-    vector <double> distribution();
-
-    double utility();
+    double utility(int i);
 
     void print();
 };
