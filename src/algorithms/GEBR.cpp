@@ -74,15 +74,15 @@ double GEBR<State, Action, Properties, InformationSet>::pass2(int i, int d, int 
     double v = 0;
     vector <Action> actions = game -> actions();
     if (game -> player() == i && l > d) {
-        int a = 0;
+        Action action = actions[0];
         double max_value = t[I][a]/b[I][a];
         for (int k = 0; k < (int) actions.size(); k++) {
             if (t[I][k]/b[I][k] > max_value) {
-                a = k;
+                action = actions[k];
                 max_value = t[I][k]/b[I][k];
             }
         }
-        game -> update_state(actions[i]);
+        game -> update_state(action);
         v = pass2(i, d, l+1, pi);
         game -> revert_state();
         return v;
@@ -119,7 +119,7 @@ double GEBR<State, Action, Properties, InformationSet>::best_response(int i) {
     for (int j = depths[i].size() - 1; j >= 0; j--) {
         v = 0;
         k = 0;
-        game -> first_initial_state();
+        game -> first_state();
         while(game -> valid_state()) {
             v += pass2(i, depths[j], 0, 1);
             game -> next_state();

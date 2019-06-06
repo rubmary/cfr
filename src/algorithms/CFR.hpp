@@ -17,11 +17,12 @@ template <
     typename State,
     typename Action,
     typename Properties,
-    typename InformationSet
+    typename InformationSet,
+    typename Hash
 >
 class CFR {
     double EPS;
-    Game<State, Action, Properties, InformationSet> *game;
+    Game<State, Action, Properties, InformationSet, Hash> *game;
     vector <vector <double>> R;
     vector <vector <double>> avg_s;
     vector <vector <double>> strategy;
@@ -69,7 +70,7 @@ class CFR {
     void normalize_strategy();
 
 public:
-    CFR(Game<State, Action, Properties, InformationSet> *g, double eps = 1e-2) {
+    CFR(Game<State, Action, Properties, InformationSet, Hash> *g, double eps = 1e-2) {
         game = g;
         R = vector <vector <double>>(0);
         avg_s = vector <vector <double>>(0);

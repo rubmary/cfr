@@ -16,7 +16,7 @@ using namespace std;
 
 namespace kuhn_poker
 {
-enum Card { Q, K, A };
+enum Card:int { Q, K, A };
 
 enum Action { pass, bet };
 
@@ -49,51 +49,39 @@ struct Hash
 {
     size_t operator()(InformationSet const& inf_set) const noexcept
     {
-        size_t hash = 0;
-        for (int i = 0; i < inf_set.history.size(); i++) {
-            boost::hash_combine(hash, inf_set.history[i]);
-        }
+        size_t hash = boost::hash_range(inf_set.history.begin(), inf_set.history.end());
         boost::hash_combine(hash, inf_set.card);
         return hash;
     }
 };
 
-class KuhnPoker : public Game<State, Action, Properties, InformationSet>
+class KuhnPoker : public Game<State, Action, Properties, InformationSet, Hash>
 {
-    unordered_map<InformationSet, int, Hash> I;
-    
     void deal_deck();
 
     int player();
+
+    void initial_state();
+
+    void first_state();
+
+    bool next_state();
 
     void change_player();
 
     InformationSet information_set();
 
-    void initial_state();
-
-    Action next_action(const Action& action);
-
-    Action first_action();
-
-    bool last_action(const Action& action);
-
-    int actions();
+    vector<Action> actions();
 
     void update_state(const Action &action);
 
     void revert_state();
 
-    int information_set_id();
-
     bool terminal_state();
 
-    bool is_chance();
-
-    vector <double> distribution();
-
-    double utility();
+    double utility(int i);
 
     void print();
 };
+
 }

@@ -3,6 +3,7 @@
 */
 #include "KuhnPoker.hpp"
 using namespace std;
+using namespace kuhn_poker;
 
 void KuhnPoker::deal_deck() {
     unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
@@ -21,16 +22,32 @@ void KuhnPoker::change_player() {
     state.player = (state.player&1) + 1;
 }
 
-int KuhnPoker::information_set_id() {
-    InformationSet inf_set = information_set();
-    if(I.find(inf_set) == I.end())
-        I[inf_set] = information_sets++;
-    return I[inf_set];
-}
-
 void KuhnPoker::initial_state() {
     deal_deck();
     state.player = 1;
+}
+
+void KuhnPoker::first_state() {
+    state.cards.resize(2);
+    state.cards[0] = Card{0};
+    state.cards[1] = Card{1};
+    state.history.clear();
+    state.player = 1;
+}
+
+bool KuhnPoker::next_state() {
+    int remaining_card = 3;
+    for (auto card : state.cards){
+        remaining_card -= card;
+    }
+    vector<int> perm{state.cards[0], state.cards[1], remaining_card};
+    if (!next_permutation(perm.begin(), perm.end())) {
+        return false;
+    }
+    for (int i = 0; i < 2; i++) {
+        state.cards[i] = Card{perm[i]};
+    }
+    return true;
 }
 
 InformationSet KuhnPoker::information_set() {
@@ -39,21 +56,10 @@ InformationSet KuhnPoker::information_set() {
     return inf_set;
 }
 
-Action KuhnPoker::first_action() {
-    return pass;
+vector<Action> KuhnPoker::actions() {
+    return vector<Action>{pass, bet};
 }
 
-Action KuhnPoker::next_action(const Action& action) {
-    return bet;
-}
-
-int KuhnPoker::actions() {
-    return 2;
-}
-
-bool KuhnPoker::last_action(const Action& action) {
-    return action == bet;
-}
 
 void KuhnPoker::update_state(const Action& action) {
     change_player();
@@ -63,15 +69,6 @@ void KuhnPoker::update_state(const Action& action) {
 void KuhnPoker::revert_state() {
     change_player();
     state.history.pop_back();
-}
-
-bool KuhnPoker::is_chance() {
-    return false;
-}
-
-
-vector<double> KuhnPoker::distribution() {
-    return vector<double>();
 }
 
 bool KuhnPoker::terminal_state() {
@@ -87,7 +84,7 @@ bool KuhnPoker::terminal_state() {
     return false;
 }
 
-double KuhnPoker::utility() {
+double KuhnPoker::utility(int i) {
     vector<int>bets(2, 1);
     for (int i = 0; i < state.history.size(); i++) {
         if(state.history[i] == bet)
@@ -96,9 +93,13 @@ double KuhnPoker::utility() {
     int N = state.history.size();
     Action last = state.history[N-1];
     Action pe   = state.history[N-2];
-    if(pe == bet && last == pass)
-        return (player() == 1 ? 1 : -1)*bets[player()&1];
-    return (double) (state.cards[0] > state.cards[1] ? bets[1] : -bets[0]);
+    int winner;
+    if(pe == bet && last == pass){
+        winner = player();
+    }else{
+        winner = state.cards[0] > state.cards[1] ? 1 : 2;
+    }
+    return (i == winner ? 1 : -1)*bets[winner&1];
 }
 
 void KuhnPoker::print() {

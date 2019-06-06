@@ -9,9 +9,10 @@ template <
     typename State,
     typename Action,
     typename Properties,
-    typename InformationSet
+    typename InformationSet,
+    typename Hash
 >
-void CFR<State, Action, Properties, InformationSet>::update_strategy(int I, int N, double pi)
+void CFR<State, Action, Properties, InformationSet, Hash>::update_strategy(int I, int N, double pi)
 {
     double sum_R = 0;
     for (int a = 0; a < N; a++){
@@ -32,9 +33,10 @@ template <
     typename State,
     typename Action,
     typename Properties,
-    typename InformationSet
+    typename InformationSet,
+    typename Hash
 >
-void CFR<State, Action, Properties, InformationSet>::initialize_game()
+void CFR<State, Action, Properties, InformationSet, Hash>::initialize_game()
 {
     game -> initial_state();
 }
@@ -43,47 +45,41 @@ template <
     typename State,
     typename Action,
     typename Properties,
-    typename InformationSet
+    typename InformationSet,
+    typename Hash
 >
-double CFR<State, Action, Properties, InformationSet>::dfs(int i, double p1, double p2)
+double CFR<State, Action, Properties, InformationSet, Hash>::dfs(int i, double p1, double p2)
 {
-    
     if (game -> terminal_state()) {
-        double sign = i == 1 ? 1 : -1;
-        return sign*(game -> utility());
+        return game -> utility(i);
     }
-    if (game->is_chance()){
-        return 1;
-    }
-    int I = game -> information_set_id(), N = game -> actions();
+    int I = game -> information_set_id();
+    vector <Action> actions = game -> actions();
+    int N = actions.size();
     if(R.size() == I) {
         R.push_back(vector<double>(N, 0));
         strategy.push_back(vector<double>(N, 0));
         avg_s.push_back(vector<double>(N, 0));
         player.push_back(game -> player());
     }
-
     double node_util = 0;
     vector <double> util(N, 0);
-    
     int current_player = game -> player();
-    Action action = game -> first_action();
-    for(int a = 0; a < N; a++) {
-        if (a != 0)
-            action = game -> next_action(action);
+    for(int k = 0; k < N; k++) {
+        Action action = actions[k];
         game -> update_state(action);        
         if (current_player == 1)
-            util[a] = dfs(i, strategy[I][a]*p1, p2);
+            util[k] = dfs(i, strategy[I][k]*p1, p2);
         else
-            util[a] = dfs(i, p1, strategy[I][a]*p2);
-        node_util += strategy[I][a]*util[a];
+            util[k] = dfs(i, p1, strategy[I][k]*p2);
+        node_util += strategy[I][k]*util[k];
         game -> revert_state();
     }
     if (current_player == i) {
         double pi_op = (i == 1) ? p2 : p1;
         double pi    = (i == 1) ? p1 : p2;
-        for (int a = 0; a < N; a++)
-            R[I][a] += pi_op*(util[a] - node_util);
+        for (int k = 0; k < N; k++)
+            R[I][k] += pi_op*(util[k] - node_util);
         update_strategy(I, N, pi);
     }
     return node_util;
@@ -93,9 +89,10 @@ template <
     typename State,
     typename Action,
     typename Properties,
-    typename InformationSet
+    typename InformationSet,
+    typename Hash
 >
-void CFR<State, Action, Properties, InformationSet>::normalize_strategy()
+void CFR<State, Action, Properties, InformationSet, Hash>::normalize_strategy()
 {
     int M = avg_s.size();
     for (int I = 0; I < M; I++) {
@@ -112,11 +109,12 @@ template <
     typename State,
     typename Action,
     typename Properties,
-    typename InformationSet
+    typename InformationSet,
+    typename Hash
 >
-vector<vector<double>> CFR<State, Action, Properties, InformationSet>::train(int iterations)
+vector<vector<double>> CFR<State, Action, Properties, InformationSet, Hash>::train(int iterations)
 {
-    vector < vector <double> > Ri;
+    vector<vector<double>> Ri;
     for (int i = 0; i < iterations; i++) {
         for (int k = 1; k <=2; k++){
             initialize_game();
@@ -142,9 +140,10 @@ template <
     typename State,
     typename Action,
     typename Properties,
-    typename InformationSet
+    typename InformationSet,
+    typename Hash
 >
-vector <vector<double>> CFR<State, Action, Properties, InformationSet>::average_strategy()
+vector <vector<double>> CFR<State, Action, Properties, InformationSet, Hash>::average_strategy()
 {
     return avg_s;
 }
@@ -153,9 +152,10 @@ template <
     typename State,
     typename Action,
     typename Properties,
-    typename InformationSet
+    typename InformationSet,
+    typename Hash
 >
-vector <vector<double>> CFR<State, Action, Properties, InformationSet>::regret()
+vector <vector<double>> CFR<State, Action, Properties, InformationSet, Hash>::regret()
 {
     return R;
 }

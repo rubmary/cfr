@@ -3,9 +3,9 @@
 #include <fstream>
 #include <vector>
 #include <iomanip>
-#include "algorithms/GEBR.cpp"
+#include "algorithms/GEBR.hpp"
 using namespace std;
 
 int main() {
-	cout << "compilando gebr" << endl;
+	cout << "compilando gebr otra vez" << endl;
 }

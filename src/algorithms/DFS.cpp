@@ -6,11 +6,12 @@ template <
     typename State,
     typename Action,
     typename Properties,
-    typename InformationSet
+    typename InformationSet,
+    typename Hash
 >
 class DFS{
 public:
-    Game<State, Action, Properties, InformationSet> *game;
+    Game<State, Action, Properties, InformationSet, Hash> *game;
     void do_something() {
         game -> print();
     }
@@ -19,14 +20,11 @@ public:
         do_something();
         if(game -> terminal_state())
             return;
-        Action action = game -> first_action();
-        while(true) {
+        vector<Action> actions = game -> actions();
+       for (auto action : actions) {
             game -> update_state(action);
             dfs();
             game -> revert_state();
-            if(game -> last_action(action))
-                break;
-            action = game -> next_action(action);
         }
     }
     void start_dfs() {

@@ -6,6 +6,7 @@
 #include "algorithms/CFR.cpp"
 #include "games/KuhnPoker/KuhnPoker.hpp"
 using namespace std;
+using namespace kuhn_poker;
 
 int iterations = 1000000;
 
@@ -15,7 +16,7 @@ int main(int argc, char **argv) {
     ofstream file_rgrt(argv[2]);
 
     KuhnPoker kuhn_poker;
-    CFR<State, Action, Properties, InformationSet> cfr({&kuhn_poker});
+    CFR<State, Action, Properties, InformationSet, Hash> cfr({&kuhn_poker});
     vector<vector<double>> regret     = cfr.train(iterations);
     cfr.train(iterations);
     vector <vector <double>> strategy   = cfr.average_strategy();
