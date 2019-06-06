@@ -5,13 +5,43 @@
 #include "CFR.hpp"
 using namespace std;
 
-template <
-    typename State,
-    typename Action,
-    typename Properties,
-    typename InformationSet,
-    typename Hash
->
+template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
+CFR<State, Action, Properties, InformationSet, Hash>::CFR(
+    Game<State, Action, Properties, InformationSet, Hash> *game,
+    double EPS)
+    : game(game), EPS(EPS)
+{
+    int information_sets = game -> discover_information_sets();
+    R = vector<vector<double>>(information_sets);
+    strategy = vector<vector<double>>(information_sets);
+    avg_s = vector<vector<double>>(information_sets);
+    player = vector<int>(information_sets);
+    game -> first_state();
+    do{
+        dfs_initialization();
+    }while(game -> next_state());
+}
+
+
+template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
+void CFR<State, Action, Properties, InformationSet, Hash>::dfs_initialization() {
+    if (game -> terminal_state())
+        return;
+    vector<Action> actions = game -> actions();
+    int N = actions.size();
+    int I = game -> information_set_id();
+    R[I] = vector<double>(N, 0);
+    strategy[I] = vector<double>(N, 0);
+    avg_s[I] = vector<double>(N, 0);
+    player[I] = game -> player();
+    for (auto action : actions) {
+        game -> update_state(action);
+        dfs_initialization();
+        game -> revert_state();
+    }
+}
+
+template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
 void CFR<State, Action, Properties, InformationSet, Hash>::update_strategy(int I, int N, double pi)
 {
     double sum_R = 0;
@@ -29,25 +59,13 @@ void CFR<State, Action, Properties, InformationSet, Hash>::update_strategy(int I
         avg_s[I][a] += pi*strategy[I][a];
 }
 
-template <
-    typename State,
-    typename Action,
-    typename Properties,
-    typename InformationSet,
-    typename Hash
->
+template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
 void CFR<State, Action, Properties, InformationSet, Hash>::initialize_game()
 {
     game -> initial_state();
 }
 
-template <
-    typename State,
-    typename Action,
-    typename Properties,
-    typename InformationSet,
-    typename Hash
->
+template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
 double CFR<State, Action, Properties, InformationSet, Hash>::dfs(int i, double p1, double p2)
 {
     if (game -> terminal_state()) {
@@ -56,12 +74,6 @@ double CFR<State, Action, Properties, InformationSet, Hash>::dfs(int i, double p
     int I = game -> information_set_id();
     vector <Action> actions = game -> actions();
     int N = actions.size();
-    if(R.size() == I) {
-        R.push_back(vector<double>(N, 0));
-        strategy.push_back(vector<double>(N, 0));
-        avg_s.push_back(vector<double>(N, 0));
-        player.push_back(game -> player());
-    }
     double node_util = 0;
     vector <double> util(N, 0);
     int current_player = game -> player();
@@ -85,13 +97,7 @@ double CFR<State, Action, Properties, InformationSet, Hash>::dfs(int i, double p
     return node_util;
 }
 
-template <
-    typename State,
-    typename Action,
-    typename Properties,
-    typename InformationSet,
-    typename Hash
->
+template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
 void CFR<State, Action, Properties, InformationSet, Hash>::normalize_strategy()
 {
     int M = avg_s.size();
@@ -105,28 +111,27 @@ void CFR<State, Action, Properties, InformationSet, Hash>::normalize_strategy()
     }
 }
 
-template <
-    typename State,
-    typename Action,
-    typename Properties,
-    typename InformationSet,
-    typename Hash
->
+template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
 vector<vector<double>> CFR<State, Action, Properties, InformationSet, Hash>::train(int iterations)
 {
     vector<vector<double>> Ri;
+    vector <vector<int>> information_sets(2);
+    for (int k = 0; k < 2; k++)
+        information_sets[k] = game -> player_information_sets(k+1);
+
     for (int i = 0; i < iterations; i++) {
         for (int k = 1; k <=2; k++){
             initialize_game();
             dfs(k, 1, 1);
-
         }
         vector <double> r(2, 0);
-        for (int I = 0; I < player.size(); I++) {
-            double regret = 0;
-            for (int a  = 0; a < (int) R[I].size(); a++)
-                regret = max(regret, R[I][a]);
-            r[player[I]-1] += regret/(i+1);
+        for (int k = 0; k < 2; k++) {
+            for (auto I : information_sets[k]) {
+                double regret = 0;
+                for (int a = 0; a < (int) R[I].size(); a++)
+                    regret = max(regret, R[I][a]);
+                r[k] += regret/(i+1);
+            }
         }
         Ri.push_back(r);
         if (r[0] < EPS && r[1] < EPS && i > 100)
@@ -136,25 +141,13 @@ vector<vector<double>> CFR<State, Action, Properties, InformationSet, Hash>::tra
     return Ri;
 }
 
-template <
-    typename State,
-    typename Action,
-    typename Properties,
-    typename InformationSet,
-    typename Hash
->
+template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
 vector <vector<double>> CFR<State, Action, Properties, InformationSet, Hash>::average_strategy()
 {
     return avg_s;
 }
 
-template <
-    typename State,
-    typename Action,
-    typename Properties,
-    typename InformationSet,
-    typename Hash
->
+template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
 vector <vector<double>> CFR<State, Action, Properties, InformationSet, Hash>::regret()
 {
     return R;

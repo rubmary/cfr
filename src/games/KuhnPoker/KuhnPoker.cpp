@@ -103,21 +103,6 @@ double KuhnPoker::utility(int i) {
 }
 
 void KuhnPoker::print() {
-
-    // cout << "Repartir cartas:" << endl;
-    // cout << "\tJugador 1: " << state.cards[0] << endl;
-    // cout << "\tJugador 2: " << state.cards[1] << endl;
-
-    // cout << "Cartas: " << state.cards[0] << ' ' << state.cards[1] << endl;
-    // cout << "Jugador: " << player() << endl;
-    // cout << "Jugadas: ";
-    //  for (int i = 0; i < state.history.size(); i++)
-    //      cout << (state.history[i] ? "apostar" : "pasar") << ' ';
-    //  cout << endl;
-
-    // cout << "Conjunto de informacion: " << information_set_id() << endl;
-    // cout << "Ganancia: " << utility() << endl << endl;
-
     cout << "Jugador: " << player() << endl;
     cout << "Cartas = " << "(" << state.cards[0] << ',' << state.cards[1] << ")\n";
     cout << "Historia = ";

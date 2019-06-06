@@ -70,13 +70,9 @@ class CFR {
     void normalize_strategy();
 
 public:
-    CFR(Game<State, Action, Properties, InformationSet, Hash> *g, double eps = 1e-2) {
-        game = g;
-        R = vector <vector <double>>(0);
-        avg_s = vector <vector <double>>(0);
-        strategy = vector <vector <double>>(0);
-        EPS = eps;
-    }
+    CFR(Game<State, Action, Properties, InformationSet, Hash> *g, double EPS = 1e-3);
+
+    void dfs_initialization();
 
     /**
         train
