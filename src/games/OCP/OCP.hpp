@@ -14,6 +14,8 @@
 #include <games/Game.hpp>
 using namespace std;
 
+namespace ocp
+{
 enum Action { pass, bet };
 
 typedef vector <Action> History;
@@ -54,43 +56,33 @@ struct Hash
     }
 };
 
-class OCP : public Game<State, Action, Properties, InformationSet>
+class OCP : public Game<State, Action, Properties, InformationSet, Hash>
 {
-    unordered_map<InformationSet, int, Hash> I;
-
-public:
-
-    OCP(int cards);
-
     int player();
 
     void change_player();
 
-    InformationSet information_set();
-
     void initial_state();
 
-    Action next_action(const Action& action);
+    void first_state();
 
-    Action first_action();
+    bool next_state();
 
-    bool last_action(const Action& action);
+    InformationSet information_set();
 
-    int actions();
+    vector<Action> actions();
 
     void update_state(const Action &action);
 
     void revert_state();
 
-    int information_set_id();
-
     bool terminal_state();
 
-    bool is_chance();
-
-    vector <double> distribution();
-
-    int utility();
+    double utility(int i);
 
     void print();
+
+public:
+    OCP(int cards);
 };
+}

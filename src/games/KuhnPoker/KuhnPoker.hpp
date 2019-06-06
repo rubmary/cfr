@@ -61,13 +61,13 @@ class KuhnPoker : public Game<State, Action, Properties, InformationSet, Hash>
 
     int player();
 
+    void change_player();
+
     void initial_state();
 
     void first_state();
 
     bool next_state();
-
-    void change_player();
 
     InformationSet information_set();
 

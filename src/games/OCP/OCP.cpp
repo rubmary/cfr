@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <ctime>
 using namespace std;
+using namespace ocp;
 
 OCP::OCP(int cards) {
     properties.N = cards;
@@ -19,13 +20,6 @@ void OCP::change_player() {
     state.player = (state.player&1) + 1;
 }
 
-int OCP::information_set_id() {
-    InformationSet inf_set = information_set();
-    if(I.find(inf_set) == I.end())
-        I[inf_set] = information_sets++;
-    return I[inf_set];
-}
-
 void OCP::initial_state() {
     state.cards.resize(2);
     state.cards[0] = rand() % properties.N;
@@ -36,26 +30,33 @@ void OCP::initial_state() {
     state.player = 1;
 }
 
+void OCP::first_state() {
+    state.cards.resize(2);
+    for (int k = 0; k < 2; k++)
+        state.cards[k] = k;
+    state.player = 1;
+    state.history.clear();
+}
+
+bool OCP::next_state() {
+    state.cards[1]++;
+    if(state.cards[0] == state.cards[1])
+        state.cards[1]++;
+    if(state.cards[1] >= properties.N) {
+        state.cards[1] = 0;
+        state.cards[0]++;
+    }
+    return state.cards[0] < properties.N;
+}
+
 InformationSet OCP::information_set() {
     int card = state.cards[player() - 1];
     InformationSet inf_set({card, state.history});
     return inf_set;
 }
 
-Action OCP::first_action() {
-    return pass;
-}
-
-Action OCP::next_action(const Action& action) {
-    return bet;
-}
-
-int OCP::actions() {
-    return 2;
-}
-
-bool OCP::last_action(const Action& action) {
-    return action == bet;
+vector<Action> OCP::actions() {
+    return vector<Action>{pass, bet};
 }
 
 void OCP::update_state(const Action& action) {
@@ -66,15 +67,6 @@ void OCP::update_state(const Action& action) {
 void OCP::revert_state() {
     change_player();
     state.history.pop_back();
-}
-
-bool OCP::is_chance() {
-    return false;
-}
-
-
-vector<double> OCP::distribution() {
-    return vector<double>();
 }
 
 bool OCP::terminal_state() {
@@ -90,7 +82,7 @@ bool OCP::terminal_state() {
     return false;
 }
 
-int OCP::utility() {
+double OCP::utility(int i) {
     vector<int>bets(2, 1);
     for (int i = 0; i < state.history.size(); i++) {
         if(state.history[i] == bet)
@@ -99,9 +91,13 @@ int OCP::utility() {
     int N = state.history.size();
     Action last = state.history[N-1];
     Action pe   = state.history[N-2];
-    if(pe == bet && last == pass)
-        return (player() == 1 ? 1 : -1)*bets[player()&1];
-    return state.cards[0] > state.cards[1] ? bets[1] : -bets[0];
+    int winner;
+    if(pe == bet && last == pass){
+        winner = player();
+    }else{
+        winner = state.cards[0] > state.cards[1] ? 1 : 2;
+    }
+    return (i == winner ? 1 : -1)*bets[winner&1];
 }
 
 void OCP::print() {
@@ -111,11 +107,9 @@ void OCP::print() {
     for (int i = 0; i < state.history.size(); i++)
         cout << (state.history[i] ? "apostar" : "pasar") << ' ';
     cout << ")" << endl;
-    
-
     if(terminal_state()) {
-        cout << "Estado terminal. Utilidad: ";
-        cout << utility() << endl;
+        cout << "Estado terminal. Utilidades: ";
+        cout << utility(1) << ' ' << utility(2) << endl;
     } else {
         cout << "Conjunto de informacion" << endl;
         InformationSet inf_set = information_set();
