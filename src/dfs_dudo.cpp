@@ -15,6 +15,6 @@ int main() {
 		}
 	}
 	Dudo dudo(2, 2, 2, dudos);
-	DFS<State, Action, Properties, InformationSet> dfs({&dudo});
+	DFS<State, Action, Properties, InformationSet, Hash> dfs({&dudo});
 	dfs.start_dfs();
 }

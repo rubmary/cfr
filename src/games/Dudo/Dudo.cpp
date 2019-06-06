@@ -18,13 +18,6 @@ void Dudo::change_player() {
     state.player = (state.player&1) + 1;
 }
 
-int Dudo::information_set_id() {
-    InformationSet inf_set = information_set();
-    if(I.find(inf_set) == I.end())
-        I[inf_set] = information_sets++;
-    return I[inf_set];
-}
-
 void Dudo::initial_state() {
     state.player = 1;
     state.history.clear();
@@ -39,6 +32,46 @@ void Dudo::initial_state() {
     }
 }
 
+void Dudo::first_state() {
+    state.player = 1;
+    state.history.clear();
+    state.bidding_sequence = "";
+    state.calls_bluff = false;
+    state.dice.resize(2);
+    vector<int>dice_number({properties.D1, properties.D2});
+    for (int i = 0; i < 2; i++) {
+        state.dice[i] = vector<int>(properties.K, 0);
+        state.dice[i][properties.K-1] = dice_number[i];
+    }
+}
+
+bool Dudo::next_sequence(vector <int> &P, int N, int S) {
+    for (int i = N-1; i > 0; i--) {
+        if (P[i] > 0) {
+            P[i-1]++;
+            P[N-1] = P[i] - 1;
+            if (i < N-1) {
+                P[i] = 0;
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Dudo::next_state() {
+    int K = properties.K, D1 = properties.D1, D2 = properties.D2;
+    if(next_sequence(state.dice[1], K, D2)) {
+        return true;
+    }
+    state.dice[1][0] = 0;
+    state.dice[1][K-1] = D2;
+    if(next_sequence(state.dice[0], K, D1)) {
+        return true;
+    }
+    return false;
+}
+
 InformationSet Dudo::information_set() {
     Dice dice = state.dice[player() - 1];
     unsigned long long mask = 0;
@@ -50,33 +83,26 @@ InformationSet Dudo::information_set() {
     return InformationSet({dice, mask});
 }
 
-Action Dudo::first_action() {
-    if(state.history.empty()){
-        return Action({1, 1});
+vector<Action> Dudo::actions() {
+    int quantity = 0, face = 0;
+    vector<Action> A;
+    if(!state.history.empty()) {
+        Action &last = state.history[state.history.size()-1];
+        quantity = last.quantity;
+        face = last.face;
     }
-    const Action &last = state.history[state.history.size() - 1];
-    return next_action(last);
-}
-
-Action Dudo::next_action(const Action &action) {
     int total_dice = properties.D1 + properties.D2;
-    int face = (action.face+1)%properties.K;
-    int quantity = action.quantity + (face==1);
-    if(quantity > total_dice) {
-        quantity = 0;
-        face = 0;
+    while(true) {
+        if (face == 0) {
+            quantity++;
+        }
+        face = (face+1)%properties.K;
+        if (quantity > total_dice)
+            break;
+        A.push_back(Action({quantity, face}));
     }
-    return Action({quantity, face});
-}
-
-bool Dudo::last_action(const Action &action) {
-    return action.quantity == 0 && action.face == 0;
-}
-
-int Dudo::actions() {
-    int total = properties.K*(properties.D1 + properties.D2);
-    int previous = state.bidding_sequence.size();
-    return total - previous;
+    A.push_back(Action({0, 0}));
+    return A;
 }
 
 void Dudo::update_state(const Action &action) {
@@ -97,7 +123,7 @@ void Dudo::revert_state() {
         state.calls_bluff = false;
     }else {
         int last = state.bidding_sequence.size() - 2;
-        while(last > 0 && state.bidding_sequence[last] == '0')
+        while(last >= 0 && state.bidding_sequence[last] == '0')
             last--;
         state.bidding_sequence.resize(last+1);
     }
@@ -109,40 +135,31 @@ bool Dudo::terminal_state() {
     return state.calls_bluff;
 }
 
-bool Dudo::is_chance() {
-    return false;
-}
-
-vector<double> Dudo::distribution() {
-    return vector<double>();
-}
-
-double Dudo::utility() {
+double Dudo::utility(int i) {
     Action &bid = state.history[state.history.size() - 2];
     int total = 0, D1 = properties.D1, D2 = properties.D2;
     total = state.dice[0][bid.face] + state.dice[1][bid.face];
-    if(bid.face != 0)
+    if(bid.face != 0){
         total += state.dice[0][0] + state.dice[1][0];
+    }
     int winner, dice = bid.quantity - total;
-    if (dice > 0)
+    if (dice > 0){
         winner = (player()&1) + 1;
-    else
+    } else {
         winner = player();
+    }
     dice = max(abs(dice), 1);
-
-    double sign = 1;
     if(winner == 1) {
         D2 = max(0, D2 - dice);
         swap(D1, D2);
-        sign = -1;
     } else {
         D1 = max(0, D1 - dice);
     }
-    return sign*properties.dudos[D1][D2];
+    return (winner == i ? -1 : 1)*properties.dudos[D1][D2];
 }
 
 void Dudo::print() {
-    if (state.bidding_sequence.empty()) {
+    if (state.history.empty()) {
         for (int i = 0; i < 2; i++) {
             cout << "Dados jugador " << i+1 << ": ";
             for (int j = 0; j < properties.K; j++)
@@ -151,15 +168,14 @@ void Dudo::print() {
         }
         cout << endl;
     }
-
     cout << "pujas " << state.bidding_sequence << ' ' << information_set().bidding_sequence << endl;
     for (int i = 0; i < (int) state.history.size(); i++)
         cout << "(" << state.history[i].quantity << ',' << state.history[i].face << ")" << ' ';
     cout << endl;
     cout << "Calls bluff " << state.calls_bluff << endl;
     if(terminal_state()) {
-        double u = utility();
-        cout << "Utility: " << u << endl;
+        cout << "Utility: ";
+        cout << utility(1) << ' ' << utility(2) << endl;
     }
     cout << endl;
 }

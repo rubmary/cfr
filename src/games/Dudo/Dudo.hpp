@@ -63,13 +63,12 @@ struct Hash {
     }
 };
 
-class Dudo : public Game<State, Action, Properties, InformationSet>
+class Dudo : public Game<State, Action, Properties, InformationSet, Hash>
 {
+    bool next_sequence(vector <int> &P, int N, int S);
+
 public:
-
     Dudo(int K, int D1, int D2, vector<vector<double>> &dudos);
-
-    unordered_map<InformationSet, int, Hash> I;
 
     int player();
 
@@ -77,29 +76,21 @@ public:
 
     void initial_state();
 
+    void first_state();
+
+    bool next_state();
+
     InformationSet information_set();
 
-    Action first_action();
-
-    Action next_action(const Action& action);
-
-    bool last_action(const Action& action);
-
-    int actions();
+    vector<Action> actions();
 
     void update_state(const Action &action);
 
     void revert_state();
 
-    int information_set_id();
-
     bool terminal_state();
 
-    bool is_chance();
-
-    vector <double> distribution();
-
-    double utility();
+    double utility(int i);
 
     void print();
 };
