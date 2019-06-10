@@ -10,7 +10,7 @@ void KuhnPoker::deal_deck() {
     vector<Card> deck(properties.deck.begin(), properties.deck.end());
     shuffle(deck.begin(), deck.end(), default_random_engine(seed));
     state.cards.resize(2);
-    for (int i = 0; i < state.cards.size(); i++)
+    for (int i = 0; i < (int) state.cards.size(); i++)
         state.cards[i] = deck[i];
 }
 
@@ -86,7 +86,7 @@ bool KuhnPoker::terminal_state() {
 
 double KuhnPoker::utility(int i) {
     vector<int>bets(2, 1);
-    for (int i = 0; i < state.history.size(); i++) {
+    for (int i = 0; i < (int) state.history.size(); i++) {
         if(state.history[i] == bet)
             bets[i&1]++;
     }
@@ -106,14 +106,14 @@ void KuhnPoker::print() {
     cout << "Jugador: " << player() << endl;
     cout << "Cartas = " << "(" << state.cards[0] << ',' << state.cards[1] << ")\n";
     cout << "Historia = ";
-    for (int i = 0; i < state.history.size(); i++)
+    for (int i = 0; i < (int) state.history.size(); i++)
         cout << (state.history[i] ? "apostar" : "pasar") << ' ';
     cout << endl;
     cout << "Conjunto de informacion" << endl;
     InformationSet inf_set = information_set();
     cout << "\tCarta = " << inf_set.card << endl;
     cout << "\tHistoria = ";
-    for (int i = 0; i < inf_set.history.size(); i++)
+    for (int i = 0; i < (int) inf_set.history.size(); i++)
         cout << (inf_set.history[i] ? "apostar" : "pasar") << ' ';
     cout << endl << endl;
 }

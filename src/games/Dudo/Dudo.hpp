@@ -60,6 +60,7 @@ struct Hash {
     size_t operator()(InformationSet const& inf_set) const noexcept {
         size_t hash = boost::hash_range(inf_set.dice.begin(), inf_set.dice.end());
         boost::hash_combine(hash, inf_set.bidding_sequence);
+        return hash;
     }
 };
 

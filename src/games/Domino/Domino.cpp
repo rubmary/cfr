@@ -97,7 +97,7 @@ InformationSet Domino::information_set()
     int p = player() - 1;
     // history
     vector<short int> history(state.history.size(), 0);
-    for(int i = 0; i < history.size(); i++) {
+    for(int i = 0; i < (int) history.size(); i++) {
         Action action = state.history[i];
         if(action.side != 'n') {
             history[i] |= (1<<6); // El septimo bit indica si paso o no el jugador
@@ -110,7 +110,7 @@ InformationSet Domino::information_set()
             history[i] |= (int) piece_mask(action.taken);
         }
     }
-    for(int i = p; i < history.size(); i+=2) // borrar las fichas tomadas del oponente
+    for(int i = p; i < (int) history.size(); i+=2) // borrar las fichas tomadas del oponente
         history[i] &= ~((1<<6)-1);
 
     // tanken_mask
@@ -204,7 +204,6 @@ void Domino::revert_state() {
     set<Piece>&hand = state.hands[player() - 1];
 
     if(action.side != 'n') {
-        Piece piece = action.placed;
         hand.insert(action.placed);
         if(state.history.size() == 1) {
             state.left = -1;

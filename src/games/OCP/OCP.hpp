@@ -48,7 +48,7 @@ struct Hash
     size_t operator()(InformationSet const& inf_set) const noexcept
     {
         size_t hash = 0;
-        for (int i = 0; i < inf_set.history.size(); i++) {
+        for (int i = 0; i < (int) inf_set.history.size(); i++) {
             boost::hash_combine(hash, inf_set.history[i]);
         }
         boost::hash_combine(hash, inf_set.card);

@@ -84,7 +84,7 @@ bool OCP::terminal_state() {
 
 double OCP::utility(int i) {
     vector<int>bets(2, 1);
-    for (int i = 0; i < state.history.size(); i++) {
+    for (int i = 0; i < (int) state.history.size(); i++) {
         if(state.history[i] == bet)
             bets[i&1]++;
     }
@@ -104,7 +104,7 @@ void OCP::print() {
     cout << "Jugador: " << player() << endl;
     cout << "Cartas = " << "(" << state.cards[0] << ',' << state.cards[1] << ")\n";
     cout << "Historia = ( ";
-    for (int i = 0; i < state.history.size(); i++)
+    for (int i = 0; i < (int) state.history.size(); i++)
         cout << (state.history[i] ? "apostar" : "pasar") << ' ';
     cout << ")" << endl;
     if(terminal_state()) {
@@ -115,7 +115,7 @@ void OCP::print() {
         InformationSet inf_set = information_set();
         cout << "\tCarta = " << inf_set.card << endl;
         cout << "\tHistoria = ( ";
-        for (int i = 0; i < inf_set.history.size(); i++)
+        for (int i = 0; i < (int) inf_set.history.size(); i++)
             cout << (inf_set.history[i] ? "apostar" : "pasar") << ' ';
         cout << ")" << endl;
     }
