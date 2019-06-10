@@ -6,11 +6,65 @@
 #include "games/OCP/OCP.hpp"
 #include "algorithms/DFS.cpp"
 using namespace std;
-using namespace kuhn_poker;
 
-int main() {
-    srand(time(NULL));
+void dfs_kuhn() {
+    using namespace kuhn_poker;
     KuhnPoker kuhn_poker;
     DFS<State, Action, Properties, InformationSet, Hash> dfs({&kuhn_poker});
     dfs.start_dfs();
+}
+
+void dfs_ocp() {
+    using namespace ocp;
+    OCP ocp(4);
+    DFS<State, Action, Properties, InformationSet, Hash> dfs({&ocp});
+    dfs.start_dfs();
+}
+
+void dfs_dudo() {
+    using namespace dudo;
+    vector<vector<double>>dudos(3, vector<double>(3, 0));
+    for(int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            dudos[i][j] = 3*i + j;
+        }
+    }
+    Dudo dudo(2, 2, 2, dudos);
+    DFS<State, Action, Properties, InformationSet, Hash> dfs({&dudo});
+    dfs.start_dfs();
+}
+
+void dfs_domino() {
+    using namespace domino;
+    cout << "hola mundo" << endl;
+    Domino domino(3, 2);
+    DFS<State, Action, Properties, InformationSet, Hash> dfs({&domino});
+    dfs.start_dfs();
+    cout << "Termino dfs" << endl;
+}
+
+int main(int argc, char** argv) {
+    if(argc < 2) {
+        cout << "Debes introducir el nombre del juego";
+        cout << endl;
+        return 0;
+    }
+    string game = argv[1];
+    srand(time(NULL));
+    if(game == "KuhnPoker"){
+        dfs_kuhn();
+    } else if(game == "OCP"){
+        dfs_ocp();
+    } else if(game == "Dudo") {
+        dfs_dudo();
+    } else if (game == "Domino") {
+        dfs_domino();
+    } else {
+        cout << "Error" << endl;
+        cout << "Los juegos validos son:" << endl;
+        cout << "\tKuhnPoker" << endl;
+        cout << "\tOCP" << endl;
+        cout << "\tDudo" << endl;
+        cout << "\tDomino" << endl;
+    }
 }
