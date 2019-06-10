@@ -19,10 +19,11 @@ template <
     typename State,
     typename Action,
     typename Properties,
-    typename InformationSet
+    typename InformationSet,
+    typename Hash
 >
 class GEBR {
-    Game<State, Action, Properties, InformationSet> *game;
+    Game<State, Action, Properties, InformationSet, Hash> *game;
     vector <vector<double>> *sigma;
     vector<vector<double>> t;
     vector<vector<double>> b;
@@ -68,7 +69,7 @@ public:
     /**
     * Constructor con el juego
     */
-    GEBR(Game<State, Action, Properties, InformationSet> *game);
+    GEBR(Game<State, Action, Properties, InformationSet, Hash> *game);
 
     /**
     * explotability:

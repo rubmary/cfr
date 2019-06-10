@@ -6,13 +6,8 @@
 #include "GEBR.hpp"
 using namespace std;
 
-template <
-    typename State,
-    typename Action,
-    typename Properties,
-    typename InformationSet
->
-GEBR<State, Action, Properties, InformationSet>::GEBR(Game<State, Action, Properties, InformationSet> *game)
+template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
+GEBR<State, Action, Properties, InformationSet, Hash>::GEBR(Game<State, Action, Properties, InformationSet, Hash> *game)
  : game(game)
 {
     int information_sets = game -> discover_information_sets();
@@ -20,13 +15,8 @@ GEBR<State, Action, Properties, InformationSet>::GEBR(Game<State, Action, Proper
     b.resize(information_sets, vector<double>(0));
 }
 
-template <
-    typename State,
-    typename Action,
-    typename Properties,
-    typename InformationSet
->
-void GEBR<State, Action, Properties, InformationSet>::discover_tree(int d) {
+template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
+void GEBR<State, Action, Properties, InformationSet, Hash>::discover_tree(int d) {
     if(game -> terminal_state()) {
         return;
     }
@@ -43,13 +33,8 @@ void GEBR<State, Action, Properties, InformationSet>::discover_tree(int d) {
     }
 }
 
-template <
-    typename State,
-    typename Action,
-    typename Properties,
-    typename InformationSet
->
-void GEBR<State, Action, Properties, InformationSet>::pass1() {
+template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
+void GEBR<State, Action, Properties, InformationSet, Hash>::pass1() {
     game -> initial_state();
     while(game -> valid_state()) {
         discover_tree(0);
@@ -60,13 +45,8 @@ void GEBR<State, Action, Properties, InformationSet>::pass1() {
     }
 }
 
-template <
-    typename State,
-    typename Action,
-    typename Properties,
-    typename InformationSet
->
-double GEBR<State, Action, Properties, InformationSet>::pass2(int i, int d, int l, double pi) {
+template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
+double GEBR<State, Action, Properties, InformationSet, Hash>::pass2(int i, int d, int l, double pi) {
     if(game -> terminal_state()) {
         return game -> utility(i);
     }
@@ -75,7 +55,7 @@ double GEBR<State, Action, Properties, InformationSet>::pass2(int i, int d, int 
     vector <Action> actions = game -> actions();
     if (game -> player() == i && l > d) {
         Action action = actions[0];
-        double max_value = t[I][a]/b[I][a];
+        double max_value = t[I][0]/b[I][0];
         for (int k = 0; k < (int) actions.size(); k++) {
             if (t[I][k]/b[I][k] > max_value) {
                 action = actions[k];
@@ -107,13 +87,8 @@ double GEBR<State, Action, Properties, InformationSet>::pass2(int i, int d, int 
     return v;
 }
 
-template <
-    typename State,
-    typename Action,
-    typename Properties,
-    typename InformationSet
->
-double GEBR<State, Action, Properties, InformationSet>::best_response(int i) {
+template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
+double GEBR<State, Action, Properties, InformationSet, Hash>::best_response(int i) {
     double v;
     int k = 0;
     for (int j = depths[i].size() - 1; j >= 0; j--) {
@@ -129,13 +104,8 @@ double GEBR<State, Action, Properties, InformationSet>::best_response(int i) {
     return v/k;
 }
 
-template <
-    typename State,
-    typename Action,
-    typename Properties,
-    typename InformationSet
->
-double GEBR<State, Action, Properties, InformationSet>::explotability(vector<vector<double>>*strategy) {
+template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
+double GEBR<State, Action, Properties, InformationSet, Hash>::explotability(vector<vector<double>>*strategy) {
     sigma = strategy;
     return best_response(0) + best_response(1);
 }
