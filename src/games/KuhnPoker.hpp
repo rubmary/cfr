@@ -82,6 +82,8 @@ class KuhnPoker : public Game<State, Action, Properties, InformationSet, Hash>
     double utility(int i);
 
     void print();
+
+    string print_information_set();
 };
 
 }

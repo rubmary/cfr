@@ -81,7 +81,7 @@ public:
     *   parametros
     *   @iterations:    numero de iteraciones
     */
-    vector<vector<double>> train(int iterations);
+    void train(int iterations, string file = "regret.txt");
 
     /**
     *   average_strategy
@@ -95,5 +95,11 @@ public:
     *   @return:    el regret inmediato
     */
     vector <vector <double>> regret();
+
+    /**
+    *   print_strategy
+    *   imprime la estrategia actual en un archivo
+    */
+    void print_strategy(string file = "strategy.txt");
 };
 #endif

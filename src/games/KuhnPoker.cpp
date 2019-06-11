@@ -6,12 +6,11 @@ using namespace std;
 using namespace kuhn_poker;
 
 void KuhnPoker::deal_deck() {
-    unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-    vector<Card> deck(properties.deck.begin(), properties.deck.end());
-    shuffle(deck.begin(), deck.end(), default_random_engine(seed));
+    vector<int> deck(properties.deck.begin(), properties.deck.end());
+    random_shuffle(deck.begin(), deck.end());
     state.cards.resize(2);
     for (int i = 0; i < (int) state.cards.size(); i++)
-        state.cards[i] = deck[i];
+        state.cards[i] = Card{deck[i]};
 }
 
 int KuhnPoker::player() {
@@ -122,4 +121,14 @@ void KuhnPoker::print() {
     for (int i = 0; i < (int) inf_set.history.size(); i++)
         cout << (inf_set.history[i] ? "apostar" : "pasar") << ' ';
     cout << endl << endl;
+}
+
+string KuhnPoker::print_information_set(){
+    InformationSet inf_set = information_set();
+    string card = to_string(inf_set.card);
+    string history = "";
+    for (auto action : inf_set.history) {
+        history += (action ? "apostar " : "pasar");
+    }
+    return card + " " + history;
 }

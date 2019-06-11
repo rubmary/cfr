@@ -36,11 +36,9 @@ void dfs_dudo() {
 
 void dfs_domino() {
     using namespace domino;
-    cout << "hola mundo" << endl;
     Domino domino(3, 2);
     DFS<State, Action, Properties, InformationSet, Hash> dfs({&domino});
     dfs.start_dfs();
-    cout << "Termino dfs" << endl;
 }
 
 int main(int argc, char** argv) {

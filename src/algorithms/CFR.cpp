@@ -2,6 +2,8 @@
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
+#include <fstream>
+#include <iomanip>
 #include "CFR.hpp"
 using namespace std;
 
@@ -112,13 +114,10 @@ void CFR<State, Action, Properties, InformationSet, Hash>::normalize_strategy()
 }
 
 template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
-vector<vector<double>> CFR<State, Action, Properties, InformationSet, Hash>::train(int iterations)
+void CFR<State, Action, Properties, InformationSet, Hash>::train(int iterations, string file)
 {
-    vector<vector<double>> Ri;
     vector <vector<int>> information_sets(2);
-    for (int k = 0; k < 2; k++)
-        information_sets[k] = game -> player_information_sets(k+1);
-
+    ofstream out(file.c_str());
     for (int i = 0; i < iterations; i++) {
         for (int k = 1; k <=2; k++){
             initialize_game();
@@ -126,25 +125,41 @@ vector<vector<double>> CFR<State, Action, Properties, InformationSet, Hash>::tra
         }
         vector <double> r(2, 0);
         for (int k = 0; k < 2; k++) {
-            for (auto I : information_sets[k]) {
+            for (auto I : game->player_information_sets(k+1)) {
                 double regret = 0;
                 for (int a = 0; a < (int) R[I].size(); a++)
                     regret = max(regret, R[I][a]);
-                r[k] += regret/(i+1);
+                r[k] += regret;
             }
+            r[k] /= i+1;
+            out << r[k] << ' ';
         }
-        Ri.push_back(r);
+        out << endl;
         if (r[0] < EPS && r[1] < EPS && i > 1)
             break;
     }
     normalize_strategy();
-    return Ri;
 }
 
 template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
 vector <vector<double>> CFR<State, Action, Properties, InformationSet, Hash>::average_strategy()
 {
     return avg_s;
+}
+
+template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
+void CFR<State, Action, Properties, InformationSet, Hash>::print_strategy(string file)
+{
+    ofstream out(file.c_str());
+    int M = avg_s.size();
+    out << M << endl;
+    for (int i = 0; i < M; i++) {
+        int N = avg_s[i].size();
+        out << N << ' ';
+        for (int j = 0; j < N; j++)
+            out << fixed << setprecision(5) << avg_s[i][j] << ' ';
+        out << endl;
+    }
 }
 
 template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
