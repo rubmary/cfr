@@ -14,6 +14,8 @@
 #include "Game.hpp"
 using namespace std;
 
+#ifndef OCP_GAME
+#define OCP_GAME
 namespace ocp
 {
 enum Action { pass, bet };
@@ -86,3 +88,7 @@ public:
     OCP(int cards);
 };
 }
+
+ostream& operator<<(ostream& os, const ocp::InformationSet& I);
+
+#endif

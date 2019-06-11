@@ -14,6 +14,9 @@
 #include "Game.hpp"
 using namespace std;
 
+
+#ifndef DUDO
+#define DUDO
 namespace dudo
 {
 
@@ -95,5 +98,8 @@ public:
 
     void print();
 };
-
 }
+
+ostream& operator<<(ostream& os, const dudo::InformationSet& I);
+
+#endif

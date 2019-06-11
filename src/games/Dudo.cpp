@@ -179,3 +179,11 @@ void Dudo::print() {
     }
     cout << endl;
 }
+
+ostream& operator<<(ostream& os, const InformationSet& I) {
+    for(auto die : I.dice) {
+        os << die << ' ';
+    }
+    os << I.bidding_sequence;
+    return os;
+}

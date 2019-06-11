@@ -15,6 +15,8 @@
 #include "Game.hpp"
 using namespace std;
 
+#ifndef DOMINO
+#define DOMINO
 namespace domino
 {
 typedef pair<short int, short int> Piece;
@@ -55,6 +57,7 @@ struct InformationSet {
                 card_taken == inf_set.card_taken;
     }
 };
+
 
 struct Hash {
     size_t operator()(InformationSet const& inf_set) const noexcept {
@@ -109,3 +112,8 @@ public:
     void print();
 };
 }
+
+ostream& operator <<(ostream& os, const byte& b);
+ostream& operator<<(ostream& os, const domino::InformationSet& I);
+
+#endif

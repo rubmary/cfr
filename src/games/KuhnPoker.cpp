@@ -132,3 +132,10 @@ string KuhnPoker::print_information_set(){
     }
     return card + " " + history;
 }
+
+ostream& operator<<(ostream& os, const InformationSet& I) {
+    os << I.card << ' ';
+    for (auto action : I.history)
+        os << action << ' ';
+    return os;
+}

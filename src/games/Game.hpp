@@ -5,6 +5,7 @@
 */
 #include <unordered_map>
 #include <vector>
+#include <sstream>
 using namespace std;
 
 #ifndef CLASS_ABSTRACT_GAME
@@ -133,10 +134,14 @@ public:
     virtual void print() = 0;
 
     /**
-    * Imprime el conjunto de informacion
-    */
-    virtual string print_information_set() {
-        return "";
+    * print_information_sets
+    * Imprime en un archivo los conjuntos de informacion
+    * con su id
+    **/
+    virtual void print_information_sets(ostream& file) {
+        for (auto inf_set : I) {
+            file << inf_set.first << ' ' << inf_set.second << endl;
+        }
     }
 };
 #endif

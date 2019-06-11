@@ -308,3 +308,22 @@ void Domino::print() {
     }
     cout << endl;
 }
+
+ostream& operator <<(ostream& os, const byte& b) {
+    for(int i = 0; i < 4; i++)
+        os << ((b<<i)&byte{1});
+    return os;
+}
+
+ostream& operator<<(ostream& os, const InformationSet& I) {
+    os << I.history.size() << ' ';
+    for (auto action : I.history) {
+        os << action << ' ';
+    }
+    os << I.hand.size() << ' ';
+    for (auto card: I.hand) {
+        os << card << ' ';
+    }
+    os << I.card_taken;
+    return os;
+}

@@ -14,6 +14,9 @@
 #include "Game.hpp"
 using namespace std;
 
+#ifndef KUHN
+#define KUHN
+
 namespace kuhn_poker
 {
 enum Card:int { Q, K, A };
@@ -85,5 +88,7 @@ class KuhnPoker : public Game<State, Action, Properties, InformationSet, Hash>
 
     string print_information_set();
 };
-
 }
+
+ostream& operator<<(ostream& os, const kuhn_poker::InformationSet& I);
+#endif
