@@ -9,7 +9,7 @@ template <typename State, typename Action, typename Properties, typename Informa
 CFR<State, Action, Properties, InformationSet, Hash>::CFR(
     Game<State, Action, Properties, InformationSet, Hash> *game,
     double EPS)
-    : game(game), EPS(EPS)
+    : EPS(EPS), game(game)
 {
     int information_sets = game -> discover_information_sets();
     R = vector<vector<double>>(information_sets);
@@ -134,7 +134,7 @@ vector<vector<double>> CFR<State, Action, Properties, InformationSet, Hash>::tra
             }
         }
         Ri.push_back(r);
-        if (r[0] < EPS && r[1] < EPS && i > 100)
+        if (r[0] < EPS && r[1] < EPS && i > 1)
             break;
     }
     normalize_strategy();

@@ -17,6 +17,9 @@ BINARIES=dfs gebr cfr
 dfs: $(DEPS) src/dfs.cpp DFS.o
 	$(CXX) -o $@ $^ $(CXXFLAGS)
 
+cfr: $(DEPS) src/cfr.cpp CFR.o
+	$(CXX) -o $@ $^ $(CXXFLAGS)
+
 .PHONY: clean
 
 clean:

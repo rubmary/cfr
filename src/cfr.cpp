@@ -4,8 +4,9 @@
 #include <vector>
 #include <iomanip>
 #include "algorithms/CFR.cpp"
-#include "games/OCP/OCP.hpp"
+#include "games/KuhnPoker.hpp"
 using namespace std;
+using namespace kuhn_poker;
 
 int iterations = 1000000;
 
@@ -13,13 +14,14 @@ int main(int argc, char **argv) {
 
     ofstream file_strt(argv[1]);
     ofstream file_rgrt(argv[2]);
-
-    OCP ocp(3);
-    CFR<State, Action, Properties, InformationSet> cfr({&ocp});
+    cout << "Creating kuhn..." << endl;
+    KuhnPoker kuhn_poker;
+    cout << "Creating cfr..." << endl;
+    CFR<State, Action, Properties, InformationSet, Hash> cfr({&kuhn_poker});
+    cout << "Training..." << endl;
     vector<vector<double>> regret     = cfr.train(iterations);
-    cfr.train(iterations);
     vector <vector <double>> strategy   = cfr.average_strategy();
-
+    cout << "printing.." << endl;
     int M = strategy.size();
     file_strt << M << endl;
     for (int i = 0; i < M; i++) {
