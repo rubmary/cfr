@@ -115,7 +115,7 @@ void KuhnPoker::print() {
         cout << endl;
         return;
     }
-    cout << "Conjunto de informacion" << endl;
+    cout << "Conjunto de informacion: " << information_set_id() << endl;
     InformationSet inf_set = information_set();
     cout << "\tCarta = " << inf_set.card << endl;
     cout << "\tHistoria = ";

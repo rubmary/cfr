@@ -29,6 +29,7 @@ public:
         }
     }
     void start_dfs() {
+        game -> discover_information_sets();
         game -> first_state();
         do{
             dfs();
