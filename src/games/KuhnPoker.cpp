@@ -134,8 +134,9 @@ string KuhnPoker::print_information_set(){
 }
 
 ostream& operator<<(ostream& os, const InformationSet& I) {
-    os << I.card << ' ';
+    os << I.history.size() << ' ';
     for (auto action : I.history)
         os << action << ' ';
+    os << I.card;
     return os;
 }

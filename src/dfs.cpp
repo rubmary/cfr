@@ -12,6 +12,7 @@ void dfs_kuhn() {
     KuhnPoker kuhn_poker;
     DFS<State, Action, Properties, InformationSet, Hash> dfs({&kuhn_poker});
     dfs.start_dfs();
+    kuhn_poker.print_information_sets(cout);
 }
 
 void dfs_ocp() {

@@ -140,7 +140,7 @@ public:
     **/
     virtual void print_information_sets(ostream& file) {
         for (auto inf_set : I) {
-            file << inf_set.first << ' ' << inf_set.second << endl;
+            file << inf_set.second << ": " << inf_set.first << endl;
         }
     }
 };
