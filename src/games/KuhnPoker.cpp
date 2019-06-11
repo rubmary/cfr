@@ -109,6 +109,12 @@ void KuhnPoker::print() {
     for (int i = 0; i < (int) state.history.size(); i++)
         cout << (state.history[i] ? "apostar" : "pasar") << ' ';
     cout << endl;
+    if (terminal_state()) {
+        cout << "Estado terminal..." << endl;
+        cout << "Utilidades: " << utility(1) << ' ' << utility(2) << endl;
+        cout << endl;
+        return;
+    }
     cout << "Conjunto de informacion" << endl;
     InformationSet inf_set = information_set();
     cout << "\tCarta = " << inf_set.card << endl;

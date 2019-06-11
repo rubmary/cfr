@@ -6,14 +6,13 @@ CXXFLAGS= \
 	-I ./
 PATHGAME=src/games/
 GAMES=KuhnPoker OCP Dudo Domino
-SRC=$(foreach game, $(GAMES), $(PATHGAME)$(game)/$(game).cpp)
-OBJECTS=$(patsubst %, %.o, $(GAMES))
+DEPS=$(patsubst %, %.o, $(GAMES))
 BINARIES=dfs gebr cfr
 
-%.o: $(SRC)
-	$(CXX) -c $(PATHGAME)$*/$*.cpp -o $@ $(CXXFLAGS)
+%.o: $(PATHGAME)%.cpp
+	$(CXX) -c $< -o $@ $(CXXFLAGS)
 
-dfs: $(OBJECTS) src/dfs.cpp
+dfs: $(DEPS) src/dfs.cpp
 	$(CXX) -o $@ $^ $(CXXFLAGS)
 
 .PHONY: clean

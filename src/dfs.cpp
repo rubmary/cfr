@@ -1,9 +1,9 @@
 #include <cstdlib>
 #include <ctime>
-#include "games/KuhnPoker/KuhnPoker.hpp"
-#include "games/Dudo/Dudo.hpp"
-#include "games/Domino/Domino.hpp"
-#include "games/OCP/OCP.hpp"
+#include "games/KuhnPoker.hpp"
+#include "games/Dudo.hpp"
+#include "games/Domino.hpp"
+#include "games/OCP.hpp"
 #include "algorithms/DFS.cpp"
 using namespace std;
 

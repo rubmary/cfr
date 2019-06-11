@@ -11,7 +11,7 @@
 #include <chrono>
 #include <boost/functional/hash.hpp>
 #include <iostream>
-#include <games/Game.hpp>
+#include "Game.hpp"
 using namespace std;
 
 namespace ocp

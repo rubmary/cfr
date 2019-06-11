@@ -304,7 +304,7 @@ void Domino::print() {
     for (auto action : state.history) {
         cout << "(" << action.placed.first << "," << action.placed.second << ") ";
         cout << "(" << action.taken.first << "," << action.taken.second << ") ";
-        cout << action.side << endl;
+        cout << action.side << endl << endl;
     }
-    cout << endl << endl;
+    cout << endl;
 }

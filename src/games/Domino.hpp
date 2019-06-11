@@ -12,7 +12,7 @@
 #include <boost/functional/hash.hpp>
 #include <iostream>
 #include <utility>
-#include "games/Game.hpp"
+#include "Game.hpp"
 using namespace std;
 
 namespace domino
