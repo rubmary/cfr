@@ -123,9 +123,21 @@ void OCP::print() {
 }
 
 ostream& operator<<(ostream& os, const InformationSet& I) {
-    os << I.card << ' ';
-    for (auto action : I.history){
+    os << I.history.size() << ' ';
+    for (auto action : I.history)
         os << action << ' ';
-    }
+    os << I.card;
     return os;
+}
+
+istream& operator>>(istream& is, InformationSet& I) {
+    int size, action;
+    is >> size;
+    I.history.resize(size);
+    for(int i = 0; i < size; i++) {
+        is >> action;
+        I.history[i] = Action{action};
+    }
+    is >> I.card;
+    return is;
 }

@@ -102,4 +102,6 @@ public:
 
 ostream& operator<<(ostream& os, const dudo::InformationSet& I);
 
+istream& operator>>(istream& is, dudo::InformationSet& I);
+
 #endif

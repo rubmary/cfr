@@ -310,8 +310,10 @@ void Domino::print() {
 }
 
 ostream& operator <<(ostream& os, const byte& b) {
-    for(int i = 0; i < 4; i++)
-        os << ((b<<i)&byte{1});
+    int num = 0;
+    for(int i = 3; i >= 0; i--)
+        num += ((int)b<<i)&1;
+    os << num;
     return os;
 }
 
@@ -326,4 +328,11 @@ ostream& operator<<(ostream& os, const InformationSet& I) {
     }
     os << I.card_taken;
     return os;
+}
+
+istream& operator>>(istream& is, byte& b) {
+    int num;
+    is >> num;
+    b = byte{(unsigned char) num};
+    return is;
 }

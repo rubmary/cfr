@@ -18,7 +18,7 @@ using namespace std;
 #define OCP_GAME
 namespace ocp
 {
-enum Action { pass, bet };
+enum Action:int { pass, bet };
 
 typedef vector <Action> History;
 
@@ -90,5 +90,7 @@ public:
 }
 
 ostream& operator<<(ostream& os, const ocp::InformationSet& I);
+
+istream& operator>>(istream& is, ocp::InformationSet& I);
 
 #endif

@@ -140,3 +140,16 @@ ostream& operator<<(ostream& os, const InformationSet& I) {
     os << I.card;
     return os;
 }
+
+istream& operator>>(istream& is, InformationSet& I) {
+    int size, action, card;
+    is >> size;
+    I.history.resize(size);
+    for (int i = 0; i < size; i++){
+        is >> action;
+        I.history[i] = Action{action};
+    }
+    is >> card;
+    I.card = kuhn_poker::Card{card};
+    return is;
+}

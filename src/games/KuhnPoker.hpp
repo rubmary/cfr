@@ -21,7 +21,7 @@ namespace kuhn_poker
 {
 enum Card:int { Q, K, A };
 
-enum Action { pass, bet };
+enum Action:int { pass, bet };
 
 typedef vector <Action> History;
 
@@ -91,4 +91,7 @@ class KuhnPoker : public Game<State, Action, Properties, InformationSet, Hash>
 }
 
 ostream& operator<<(ostream& os, const kuhn_poker::InformationSet& I);
+
+istream& operator>>(istream& is, kuhn_poker::InformationSet &I);
+
 #endif

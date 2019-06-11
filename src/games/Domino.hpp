@@ -113,7 +113,8 @@ public:
 };
 }
 
-ostream& operator <<(ostream& os, const byte& b);
+ostream& operator<<(ostream& os, const byte& b);
 ostream& operator<<(ostream& os, const domino::InformationSet& I);
-
+istream& operator>>(istream& is, byte& b);
+istream& operator>>(istream& is, domino::InformationSet& I);
 #endif

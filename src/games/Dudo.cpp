@@ -181,9 +181,21 @@ void Dudo::print() {
 }
 
 ostream& operator<<(ostream& os, const InformationSet& I) {
+    os << I.dice.size()  << ' ';
     for(auto die : I.dice) {
         os << die << ' ';
     }
     os << I.bidding_sequence;
     return os;
+}
+
+istream& operator>>(istream& is, InformationSet& I) {
+    int size;
+    is >> size;
+    I.dice.resize(size);
+    for (int i = 0; i < size; i++) {
+        is >> I.dice[i];
+    }
+    is >> I.bidding_sequence;
+    return is;
 }
