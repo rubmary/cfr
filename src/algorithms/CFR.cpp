@@ -114,10 +114,9 @@ void CFR<State, Action, Properties, InformationSet, Hash>::normalize_strategy()
 }
 
 template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
-void CFR<State, Action, Properties, InformationSet, Hash>::train(int iterations, string file)
+void CFR<State, Action, Properties, InformationSet, Hash>::train(int iterations, ostream& os)
 {
     vector <vector<int>> information_sets(2);
-    ofstream out(file.c_str());
     for (int i = 0; i < iterations; i++) {
         for (int k = 1; k <=2; k++){
             initialize_game();
@@ -132,10 +131,10 @@ void CFR<State, Action, Properties, InformationSet, Hash>::train(int iterations,
                 r[k] += regret;
             }
             r[k] /= i+1;
-            out << r[k] << ' ';
+            os << r[k] << ' ';
         }
-        out << endl;
-        if (r[0] < EPS && r[1] < EPS && i > 1)
+        os << endl;
+        if (r[0] < EPS && r[1] < EPS && i > 100)
             break;
     }
     normalize_strategy();
@@ -148,17 +147,16 @@ vector <vector<double>> CFR<State, Action, Properties, InformationSet, Hash>::av
 }
 
 template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
-void CFR<State, Action, Properties, InformationSet, Hash>::print_strategy(string file)
+void CFR<State, Action, Properties, InformationSet, Hash>::print_strategy(ostream& os)
 {
-    ofstream out(file.c_str());
     int M = avg_s.size();
-    out << M << endl;
+    os << M << endl;
     for (int i = 0; i < M; i++) {
         int N = avg_s[i].size();
-        out << N << ' ';
+        os << N << ' ';
         for (int j = 0; j < N; j++)
-            out << fixed << setprecision(5) << avg_s[i][j] << ' ';
-        out << endl;
+            os << fixed << setprecision(5) << avg_s[i][j] << ' ';
+        os << endl;
     }
 }
 

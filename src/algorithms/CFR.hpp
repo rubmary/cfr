@@ -81,7 +81,7 @@ public:
     *   parametros
     *   @iterations:    numero de iteraciones
     */
-    void train(int iterations, string file = "regret.txt");
+    void train(int iterations, ostream& os = cout);
 
     /**
     *   average_strategy
@@ -100,6 +100,6 @@ public:
     *   print_strategy
     *   imprime la estrategia actual en un archivo
     */
-    void print_strategy(string file = "strategy.txt");
+    void print_strategy(ostream& os = cout);
 };
 #endif
