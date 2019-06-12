@@ -1,5 +1,7 @@
 #include <games/Game.hpp>
 #include <iostream>
+#include <set>
+#include <vector>
 using namespace std;
 
 #ifndef CLASS_GEBR
@@ -27,7 +29,7 @@ class GEBR {
     vector <vector<double>> sigma;
     vector<vector<double>> t;
     vector<vector<double>> b;
-    vector <vector<int>> depths;
+    vector <set<int>> depths;
     int N;
 
     /**

@@ -154,7 +154,7 @@ public:
     * Imprime en un archivo los conjuntos de informacion
     * con su id
     **/
-    virtual void print_information_sets(ostream& os) {
+    virtual void print_information_sets(ostream& os = cout) {
         os << I.size() << endl;
         for (auto inf_set : I)
             os << inf_set.second << " : " << inf_set.first << endl;
