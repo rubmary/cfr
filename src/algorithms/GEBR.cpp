@@ -13,6 +13,7 @@ GEBR<State, Action, Properties, InformationSet, Hash>::GEBR(Game<State, Action, 
     int information_sets = game -> discover_information_sets(is);
     t.resize(information_sets, vector<double>(0));
     b.resize(information_sets, vector<double>(0));
+    depths.resize(2, vector<int>(0));
 }
 
 template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
@@ -21,11 +22,16 @@ void GEBR<State, Action, Properties, InformationSet, Hash>::discover_tree(int d)
         return;
     }
     int I = game -> information_set_id();
+    // cout << "Information Set: " << I << endl;
     vector<Action> actions = game -> actions();
     int total_actions = actions.size();
+    // cout << "Resizing t..." << endl;
     t[I].resize(total_actions, 0);
+    // cout << "Resizing b.." << endl;
     b[I].resize(total_actions, 0);
+    // cout << "Add in depths..." << endl;
     depths[game -> player() - 1].push_back(d);
+    // cout << "Iterando sobre los hijos..." << endl;
     for (auto action : actions) {
         game -> update_state(action);
         discover_tree(d+1);
@@ -35,11 +41,12 @@ void GEBR<State, Action, Properties, InformationSet, Hash>::discover_tree(int d)
 
 template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
 void GEBR<State, Action, Properties, InformationSet, Hash>::pass1() {
-    game -> initial_state();
-    while(game -> valid_state()) {
+    // cout << "Dentro de pass1..." << endl;
+    game -> first_state();
+    do{
         discover_tree(0);
-        game -> next_state();
-    }
+        // cout << "iteracion: " << ++k << endl;
+    } while(game -> next_state());
     for (int i = 0; i < 2; i++){
         sort(depths[i].begin(), depths[i].end());
     }
@@ -70,7 +77,7 @@ double GEBR<State, Action, Properties, InformationSet, Hash>::pass2(int i, int d
     int a = 0;
     for (auto action : actions) {
         double pi2 = pi;
-        if (game -> player != i){
+        if (game -> player() != i){
             pi2 *= sigma[I][a];
         }
         game -> update_state(action);
@@ -89,17 +96,17 @@ double GEBR<State, Action, Properties, InformationSet, Hash>::pass2(int i, int d
 
 template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
 double GEBR<State, Action, Properties, InformationSet, Hash>::best_response(int i) {
+    cout << "Calculando mejor respuesta del jugador: " << i << endl;
     double v;
     int k = 0;
-    for (int j = depths[i].size() - 1; j >= 0; j--) {
+    for (int j = depths[i-1].size() - 1; j >= 0; j--) {
         v = 0;
         k = 0;
         game -> first_state();
-        while(game -> valid_state()) {
-            v += pass2(i, depths[j], 0, 1);
-            game -> next_state();
+        do {
+            v += pass2(i, depths[i-1][j], 0, 1);
             k++;
-        }
+        } while(game -> next_state());
     }
     return v/k;
 }
@@ -120,6 +127,13 @@ void GEBR<State, Action, Properties, InformationSet, Hash>::read_sigma(istream& 
 
 template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
 double GEBR<State, Action, Properties, InformationSet, Hash>::explotability(istream& is) {
+    cout << "Leyendo sigma..." << endl;
     read_sigma(is);
-    return best_response(0) + best_response(1);
+    cout << "Realizando pass1..." << endl;
+    pass1();
+    cout << "Calculando mejores respuestas..." << endl;
+    double u1 = best_response(1);
+    double u2 = best_response(2);
+    cout << "Peores casos: " << u1 << ' ' << u2 << endl;
+    return  u1 + u2;
 }

@@ -17,6 +17,7 @@ void cfr_kuhn(ostream& os_regret, ostream& os_strategy, ostream& os_inf_sets){
     cfr.print_strategy(os_strategy);
     kuhn_poker.print_information_sets(os_inf_sets);
 }
+
 int main(int argc, char **argv) {
     srand(time(NULL));
     if(argc < 2) {
