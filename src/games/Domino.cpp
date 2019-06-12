@@ -336,3 +336,16 @@ istream& operator>>(istream& is, byte& b) {
     b = byte{(unsigned char) num};
     return is;
 }
+
+istream& operator>>(istream& is, InformationSet& I) {
+    int size;
+    is >> size;
+    I.history.resize(size);
+    for (int i = 0; i < size; i++)
+        is >> I.history[i];
+    is >> size;
+    for (int i = 0; i < size; i++)
+        is >> I.hand[i];
+    is >> I.card_taken;
+    return is;
+}

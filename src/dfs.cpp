@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <ctime>
+#include <fstream>
 #include "games/KuhnPoker.hpp"
 #include "games/Dudo.hpp"
 #include "games/Domino.hpp"
@@ -8,11 +9,18 @@
 using namespace std;
 
 void dfs_kuhn() {
+    ofstream os("information_sets.txt");
     using namespace kuhn_poker;
     KuhnPoker kuhn_poker;
     DFS<State, Action, Properties, InformationSet, Hash> dfs({&kuhn_poker});
     dfs.start_dfs();
-    kuhn_poker.print_information_sets(cout);
+    kuhn_poker.print_information_sets(os);
+    os.close();
+    ifstream is("information_sets.txt");
+    KuhnPoker kuhn_poker2;
+    kuhn_poker2.discover_information_sets(is);
+    ofstream os2("information_sets2.txt");
+    kuhn_poker2.print_information_sets(os2);
 }
 
 void dfs_ocp() {

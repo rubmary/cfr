@@ -76,6 +76,22 @@ public:
     }
 
     /**
+    * Descubre los conjuntos de informacion
+    * a partir de un istream
+    */
+    virtual int discover_information_sets(istream& is) {
+        is >> information_sets;
+        InformationSet inf_set;
+        int id;
+        string _;
+        for (int i = 0; i < information_sets; i++) {
+            is >> id >> _ >> inf_set;
+            I[inf_set] = id;
+        }
+        return information_sets;
+    }
+
+    /**
     * Primer estado inicial del juego
     */
     virtual void first_state() = 0;
@@ -138,10 +154,10 @@ public:
     * Imprime en un archivo los conjuntos de informacion
     * con su id
     **/
-    virtual void print_information_sets(ostream& file) {
-        for (auto inf_set : I) {
-            file << inf_set.second << ": " << inf_set.first << endl;
-        }
+    virtual void print_information_sets(ostream& os) {
+        os << I.size() << endl;
+        for (auto inf_set : I)
+            os << inf_set.second << " : " << inf_set.first << endl;
     }
 };
 #endif
