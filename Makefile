@@ -20,6 +20,9 @@ dfs: $(DEPS) src/dfs.cpp DFS.o
 cfr: $(DEPS) src/cfr.cpp CFR.o
 	$(CXX) -o $@ $^ $(CXXFLAGS)
 
+gebr: $(DEPS) src/gebr.cpp GEBR.o
+	$(CXX) -o $@ $^ $(CXXFLAGS)
+
 .PHONY: clean
 
 clean:

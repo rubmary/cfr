@@ -24,7 +24,7 @@ template <
 >
 class GEBR {
     Game<State, Action, Properties, InformationSet, Hash> *game;
-    vector <vector<double>> *sigma;
+    vector <vector<double>> sigma;
     vector<vector<double>> t;
     vector<vector<double>> b;
     vector <vector<int>> depths;
@@ -65,17 +65,22 @@ class GEBR {
     */
     double best_response(int i);
 
+    /**
+    * read_sigma
+    * lee la estrategia de un istream
+    */
+    void read_sigma(istream& is);
 public:
     /**
     * Constructor con el juego
     */
-    GEBR(Game<State, Action, Properties, InformationSet, Hash> *game);
+    GEBR(Game<State, Action, Properties, InformationSet, Hash> *game, istream& is);
 
     /**
     * explotability:
     * explotabilidad de la estrategia sigma
     *
     */
-    double explotability(vector<vector<double>> *sigma);
+    double explotability(istream& is);
 };
 #endif

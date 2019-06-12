@@ -7,10 +7,10 @@
 using namespace std;
 
 template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
-GEBR<State, Action, Properties, InformationSet, Hash>::GEBR(Game<State, Action, Properties, InformationSet, Hash> *game)
+GEBR<State, Action, Properties, InformationSet, Hash>::GEBR(Game<State, Action, Properties, InformationSet, Hash> *game, istream& is)
  : game(game)
 {
-    int information_sets = game -> discover_information_sets();
+    int information_sets = game -> discover_information_sets(is);
     t.resize(information_sets, vector<double>(0));
     b.resize(information_sets, vector<double>(0));
 }
@@ -71,13 +71,13 @@ double GEBR<State, Action, Properties, InformationSet, Hash>::pass2(int i, int d
     for (auto action : actions) {
         double pi2 = pi;
         if (game -> player != i){
-            pi2 *= (*sigma)[I][a];
+            pi2 *= sigma[I][a];
         }
         game -> update_state(action);
         double v2 = pass2(i, d, l+1, pi2); 
         game -> revert_state();
         if (game -> player() != i) {
-            v += (*sigma)[I][a]*v2;
+            v += sigma[I][a]*v2;
         } else if(l == d) {
             t[I][a] += v2*pi;
             b[I][a] += pi;
@@ -105,7 +105,21 @@ double GEBR<State, Action, Properties, InformationSet, Hash>::best_response(int 
 }
 
 template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
-double GEBR<State, Action, Properties, InformationSet, Hash>::explotability(vector<vector<double>>*strategy) {
-    sigma = strategy;
+void GEBR<State, Action, Properties, InformationSet, Hash>::read_sigma(istream& is) {
+    int information_sets, actions;
+    is >> information_sets;
+    sigma.resize(information_sets);
+    for (int i = 0; i < information_sets; i++) {
+        is >> actions;
+        sigma[i].resize(actions);
+        for(int j = 0; j < actions; j++) {
+            is >> sigma[i][j];
+        }
+    }
+}
+
+template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
+double GEBR<State, Action, Properties, InformationSet, Hash>::explotability(istream& is) {
+    read_sigma(is);
     return best_response(0) + best_response(1);
 }
