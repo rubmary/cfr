@@ -7,14 +7,11 @@
 #include "games/KuhnPoker.hpp"
 using namespace std;
 
-void gebr_kuhn(ifstream &is_inf_sets, ifstream &is_strategy) {
+void gebr_kuhn(ifstream &is_inf_sets, ifstream &is_strategy, ostream &os_eval) {
 	using namespace kuhn_poker;
 	KuhnPoker kuhn;
-	cout << "Creando gebr..." << endl;
 	GEBR<State, Action, Properties, InformationSet, Hash> gebr(&kuhn, is_inf_sets);
-	cout << "Calculando explotabilidad..." << endl;
-	double e = gebr.explotability(is_strategy);
-	cout << e << endl;
+	gebr.explotability(is_strategy, os_eval);
 }
 
 int main(int argc, char **argv) {
@@ -27,11 +24,13 @@ int main(int argc, char **argv) {
     string game = argv[1];
     string path_inf_sets = "results/" + game + "/information_sets.txt";
     string path_strategy = "results/" + game + "/strategy.txt";
+    string path_eval = "results/" + game + "/strategy_evaluation.txt";
     ifstream is_inf_sets(path_inf_sets.c_str());
     ifstream is_strategy(path_strategy.c_str());
+    ofstream os_eval(path_eval.c_str());
 
     if(game == "KuhnPoker"){
-        gebr_kuhn(is_inf_sets, is_strategy);
+        gebr_kuhn(is_inf_sets, is_strategy, os_eval);
     } else if(game == "OCP"){
         cout << "En construccion" << endl;
     } else if(game == "Dudo") {

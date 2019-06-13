@@ -83,6 +83,6 @@ public:
     * explotabilidad de la estrategia sigma
     *
     */
-    double explotability(istream& is);
+    double explotability(istream& is, ostream& os = cout);
 };
 #endif

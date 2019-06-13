@@ -118,28 +118,13 @@ void GEBR<State, Action, Properties, InformationSet, Hash>::read_sigma(istream& 
 }
 
 template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
-double GEBR<State, Action, Properties, InformationSet, Hash>::explotability(istream& is) {
-    cout << "Leyendo sigma..." << endl;
+double GEBR<State, Action, Properties, InformationSet, Hash>::explotability(istream& is, ostream& os) {
     read_sigma(is);
-    cout << "Imprimiendo sigma..." << endl;
-    for(auto I : sigma) {
-        for (auto p : I) {
-            cout << p << ' ';
-        }
-        cout << endl;
-    }
-    cout << "Realizando pass1..." << endl;
     pass1();
-    cout << "Imprimir profundidades..." << endl;
-    for (int i = 0; i < (int) depths.size(); i++) {
-        for (auto depth : depths[i]) {
-            cout << depth << ' ';
-        }
-        cout << endl;
-    }
-    cout << "Calculando mejores respuestas..." << endl;
     double u1 = best_response(1);
     double u2 = best_response(2);
-    cout << "Peores casos: " << u1 << ' ' << u2 << endl;
+    os << "Best response for player 1: " << u1 << endl;
+    os << "Best response for player 2: " << u2 << endl;
+    os << "Explotability: " << u1 + u2 << endl;
     return  u1 + u2;
 }
