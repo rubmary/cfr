@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <vector>
 #include <sstream>
+#include <iostream>
 using namespace std;
 
 #ifndef CLASS_ABSTRACT_GAME

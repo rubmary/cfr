@@ -34,12 +34,13 @@ typedef vector<int>Dice;
 * @K  : numero de caras del dado
 * @D1 : numero de dados del jugador 1
 * @D2 : numero de dados del jugador 2
+* @dudos: Valores esperados de los juegos mas pequeños con k caras
 */
 struct Properties {
     int K;
     int D1;
     int D2;
-    vector<vector<double>>dudos; // Valores esperados de los juegos mas pequeños con k caras
+    vector<vector<double>>dudos;
 };
 
 struct State {
@@ -69,7 +70,13 @@ struct Hash {
 
 class Dudo : public Game<State, Action, Properties, InformationSet, Hash>
 {
-    bool next_sequence(vector <int> &P, int N, int S);
+    /**
+    *
+    * Properties
+    * @P : Secuencia actual
+    * @N : Longitud de la secuencia
+    */
+    bool next_sequence(vector <int> &P, int N);
 
 public:
     Dudo(int K, int D1, int D2, vector<vector<double>> &dudos);

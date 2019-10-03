@@ -45,7 +45,7 @@ void Dudo::first_state() {
     }
 }
 
-bool Dudo::next_sequence(vector <int> &P, int N, int S) {
+bool Dudo::next_sequence(vector <int> &P, int N) {
     for (int i = N-1; i > 0; i--) {
         if (P[i] > 0) {
             P[i-1]++;
@@ -60,13 +60,13 @@ bool Dudo::next_sequence(vector <int> &P, int N, int S) {
 }
 
 bool Dudo::next_state() {
-    int K = properties.K, D1 = properties.D1, D2 = properties.D2;
-    if(next_sequence(state.dice[1], K, D2)) {
+    int K = properties.K, D2 = properties.D2;
+    if(next_sequence(state.dice[1], K)) {
         return true;
     }
     state.dice[1][0] = 0;
     state.dice[1][K-1] = D2;
-    if(next_sequence(state.dice[0], K, D1)) {
+    if(next_sequence(state.dice[0], K)) {
         return true;
     }
     return false;
@@ -84,9 +84,10 @@ InformationSet Dudo::information_set() {
 }
 
 vector<Action> Dudo::actions() {
-    int quantity = 0, face = 0;
+    int quantity = 0, face = 0, first_turn = true;
     vector<Action> A;
     if(!state.history.empty()) {
+        first_turn = false;
         Action &last = state.history[state.history.size()-1];
         quantity = last.quantity;
         face = last.face;
@@ -101,7 +102,9 @@ vector<Action> Dudo::actions() {
             break;
         A.push_back(Action({quantity, face}));
     }
-    A.push_back(Action({0, 0}));
+    if (!first_turn){
+        A.push_back(Action({0, 0}));
+    }
     return A;
 }
 
@@ -137,45 +140,50 @@ bool Dudo::terminal_state() {
 
 double Dudo::utility(int i) {
     Action &bid = state.history[state.history.size() - 2];
-    int total = 0, D1 = properties.D1, D2 = properties.D2;
-    total = state.dice[0][bid.face] + state.dice[1][bid.face];
-    if(bid.face != 0){
-        total += state.dice[0][0] + state.dice[1][0];
-    }
-    int winner, dice = bid.quantity - total;
-    if (dice > 0){
-        winner = (player()&1) + 1;
-    } else {
-        winner = player();
-    }
-    dice = max(abs(dice), 1);
+    int total_dice, D1 = properties.D1, D2 = properties.D2;
+    total_dice = state.dice[0][bid.face] + state.dice[1][bid.face];
+    int winner = (total_dice - bid.quantity < 0) ? (player()&1) + 1 : player();
     if(winner == 1) {
-        D2 = max(0, D2 - dice);
+        --D2;
         swap(D1, D2);
     } else {
-        D1 = max(0, D1 - dice);
+        --D1;
     }
-    return (winner == i ? -1 : 1)*properties.dudos[D1][D2];
+    return (winner == i ? 1 : -1)*properties.dudos[D1][D2];
 }
 
 void Dudo::print() {
-    if (state.history.empty()) {
-        for (int i = 0; i < 2; i++) {
-            cout << "Dados jugador " << i+1 << ": ";
-            for (int j = 0; j < properties.K; j++)
-                cout << state.dice[i][j] << ' ';
-            cout << endl;
-        }
+    int K = properties.K;
+
+    for (int i = 0; i < 2; i++) {
+        cout << "Dados jugador " << i+1 << ": ";
+        for (int j = 0; j < properties.K; j++)
+            cout << state.dice[i][j] << ' ';
         cout << endl;
     }
-    cout << "pujas " << state.bidding_sequence << ' ' << information_set().bidding_sequence << endl;
-    for (int i = 0; i < (int) state.history.size(); i++)
-        cout << "(" << state.history[i].quantity << ',' << state.history[i].face << ")" << ' ';
-    cout << endl;
-    cout << "Calls bluff " << state.calls_bluff << endl;
-    if(terminal_state()) {
-        cout << "Utility: ";
-        cout << utility(1) << ' ' << utility(2) << endl;
+    cout << "Secuencia:" << endl;
+    cout << "\tString:    " << state.bidding_sequence << endl;
+    cout << "\tLong long: " << information_set().bidding_sequence << endl;
+    cout << "\tHistoria:  ";
+    for (int i = 0; i < (int) state.history.size() - 1; i++) {
+        int face = state.history[i].face;
+        cout << "(" << state.history[i].quantity << ',' << (face == 0 ? K : face) << ")" << ' ';
+    }
+
+    if (terminal_state()) {
+        cout << "(dudo)" << endl;
+        double u = utility(1);
+        cout << "player = " << player() << ", winner = " << (u > 0 ? 1 : 2) << endl;
+        int v = (int) (abs(u) + 0.1);
+        int i = v/3, j = v%3;
+        cout << "Nuevos dados: " << i << ' ' << j << endl;
+    } else {
+        int i = (int) state.history.size() - 1;
+        if (i >= 0){
+            int face = state.history[i].face;
+            cout << "(" << state.history[i].quantity << ',' << (face == 0 ? K : face) << ")";
+        }
+        cout << endl;
     }
     cout << endl;
 }
