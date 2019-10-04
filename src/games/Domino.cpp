@@ -48,6 +48,7 @@ void Domino::create_pack() {
         }
     }
 }
+
 void Domino::initial_state()
 {
     create_pack();
@@ -226,6 +227,9 @@ bool Domino::terminal_state() {
         if (state.hands[i].empty())
             return true;
     }
+    if(!state.pack.empty()) {
+        return false;
+    }
     int N = state.history.size();
     if( N > 2 && state.history[N-1].side == 'n' && state.history[N-2].side == 'n')
         return true;
@@ -250,7 +254,7 @@ double Domino::utility(int i) {
         u = points[1];
         winner = 1;
     } else if(state.hands[1].empty()) {
-        u = points[2];
+        u = points[0];
         winner = 2;
     }else if (points[0] == points[1]) {
         u = 0;
@@ -264,6 +268,8 @@ double Domino::utility(int i) {
             winner = 2;
         }
     }
+    cout << "Puntos acumulados: " << points[0] << ' ' << points[1] << endl;
+    cout << "Winner: " << winner << endl;
     return (winner == i ? 1 : -1)*u;
 }
 
@@ -304,7 +310,12 @@ void Domino::print() {
     for (auto action : state.history) {
         cout << "(" << action.placed.first << "," << action.placed.second << ") ";
         cout << "(" << action.taken.first << "," << action.taken.second << ") ";
-        cout << action.side << endl << endl;
+        cout << action.side << endl;
+    }
+    if (terminal_state()) {
+        double u = utility(1);
+        cout << "Winner: " << (u >= 0 ? 1 : 2) << endl;
+        cout << "Puntos: " << abs(u) << endl;
     }
     cout << endl;
 }
