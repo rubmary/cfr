@@ -59,29 +59,35 @@ void Domino::initial_state()
 void Domino::first_state()
 {
     create_pack();
+    state.permutation.resize(state.pack.size());
+    for (int i = 0; i < (int) state.pack.size(); i++)
+        state.permutation[i] = state.pack[i];
     deal_cards();
 }
 
 bool Domino::next_state()
 {
-    if(!next_permutation(state.pack.begin(), state.pack.end())) {
+    if(!next_permutation(state.permutation.begin(), state.permutation.end())) {
         return false;
     }
+    state.pack.resize(state.permutation.size());
+    for (int i = 0; i < (int) state.permutation.size(); i++)
+        state.pack[i] = state.permutation[i];
     deal_cards();
-    return false;
+    return true;
 }
 
 bool Domino::will_take() {
     set<Piece>&hand = state.hands[player()-1];
     for (auto piece : hand) {
         if(place_to_left(piece)){
-            return true;
+            return false;
         }
         if (place_to_right(piece)) {
-            return true;
+            return false;
         }
     }
-    return false;
+    return true;
 }
 
 // Los ultimos tres bytes representan la primera cara
@@ -95,39 +101,46 @@ byte piece_mask(Piece piece) {
 
 InformationSet Domino::information_set()
 {
-    int p = player() - 1;
+    int p = player()&1;
     // history
     vector<short int> history(state.history.size(), 0);
     for(int i = 0; i < (int) history.size(); i++) {
         Action action = state.history[i];
-        if(action.side != 'n') {
-            history[i] |= (1<<6); // El septimo bit indica si paso o no el jugador
+        if(action.side == 'n') {
+            // El octavo bit indica si paso o no el jugador: considerar cambiar
+            history[i] |= (1<<7);
+        } else {
             history[i] |= (int) piece_mask(action.placed)<<8;
             if(action.side == 'r') // El bit quince representa de que lado se jugo
                 history[i] |= (1<<14);
         }
         if(action.taken != Piece({-1, -1})) {
-            history[i] |= (1<<7); // El octavo bit indica si se tomo ficha o no
+            // El septimo bit indica si se tomo ficha o no
+            history[i] |= (1<<6);
+            // Los primeros 6 bits indican la ficha tomada
             history[i] |= (int) piece_mask(action.taken);
         }
     }
-    for(int i = p; i < (int) history.size(); i+=2) // borrar las fichas tomadas del oponente
+    // borrar las fichas tomadas del oponente
+    for(int i = p; i < (int) history.size(); i+=2)
         history[i] &= ~((1<<6)-1);
 
     // tanken_mask
     Piece taken_piece = state.pack[state.pack.size()-1];
-    byte taken_mask = byte{0};
+    byte taken_piece_mask = byte{0};
     if(will_take()) {
-        taken_mask = piece_mask(taken_piece);
-        taken_mask |= byte{1<<6};
+        taken_piece_mask = piece_mask(taken_piece);
+        // El septimo bit indica si se tomo la ficha o no
+        taken_piece_mask |= byte{1<<6};
     }
     // hand
-    vector<byte>hand(state.hands[p].size(), byte{0});
+    int player_index = player() - 1;
+    vector<byte>hand(state.hands[player_index].size(), byte{0});
     int i = 0;
-    for (auto piece : state.hands[p]) {
+    for (auto piece : state.hands[player_index]) {
         hand[i++] = piece_mask(piece);
     }
-    return InformationSet({history, hand, taken_mask});
+    return InformationSet({history, hand, taken_piece_mask});
 }
 
 bool Domino::place_to_left(const Piece& piece) {
@@ -268,8 +281,6 @@ double Domino::utility(int i) {
             winner = 2;
         }
     }
-    cout << "Puntos acumulados: " << points[0] << ' ' << points[1] << endl;
-    cout << "Winner: " << winner << endl;
     return (winner == i ? 1 : -1)*u;
 }
 
@@ -316,15 +327,16 @@ void Domino::print() {
         double u = utility(1);
         cout << "Winner: " << (u >= 0 ? 1 : 2) << endl;
         cout << "Puntos: " << abs(u) << endl;
+    }else {
+        cout << "Tomara pieza? " << (will_take() ? "si" : "no") << endl;
+        cout << "Conjunto de informacion: " << information_set() << endl;
     }
     cout << endl;
+
 }
 
 ostream& operator <<(ostream& os, const byte& b) {
-    int num = 0;
-    for(int i = 3; i >= 0; i--)
-        num += ((int)b<<i)&1;
-    os << num;
+    os << (int) b;
     return os;
 }
 

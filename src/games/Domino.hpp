@@ -41,6 +41,7 @@ struct Properties {
 
 struct State {
     vector<Piece> pack;
+    vector<Piece> permutation;
     vector<set<Piece>> hands;
     int left, right;
     History history;
