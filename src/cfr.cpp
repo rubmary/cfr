@@ -5,17 +5,27 @@
 #include <iomanip>
 #include "algorithms/CFR.cpp"
 #include "games/KuhnPoker.hpp"
+#include "games/OCP.hpp"
 using namespace std;
-using namespace kuhn_poker;
-
 int iterations = 1000000;
+#define EPS 1e-5
 
-void cfr_kuhn(ostream& os_regret, ostream& os_strategy, ostream& os_inf_sets){
+void cfr_kuhn(ostream& os_regret, ostream& os_strategy, ostream& os_inf_sets) {
+    using namespace kuhn_poker;
     KuhnPoker kuhn_poker;
-    CFR<State, Action, Properties, InformationSet, Hash> cfr({&kuhn_poker}, 1e-5);
+    CFR<State, Action, Properties, InformationSet, Hash> cfr({&kuhn_poker}, EPS);
     cfr.train(iterations, os_regret);
     cfr.print_strategy(os_strategy);
     kuhn_poker.print_information_sets(os_inf_sets);
+}
+
+void cfr_ocp(ostream& os_regret, ostream& os_strategy, ostream& os_inf_sets) {
+    using namespace ocp;
+    OCP ocp(3);
+    CFR<State, Action, Properties, InformationSet, Hash> cfr({&ocp}, EPS);
+    cfr.train(iterations, os_regret);
+    cfr.print_strategy(os_strategy);
+    ocp.print_information_sets(os_inf_sets);
 }
 
 int main(int argc, char **argv) {
@@ -37,7 +47,7 @@ int main(int argc, char **argv) {
     if(game == "KuhnPoker"){
         cfr_kuhn(os_regret, os_strategy, os_inf_sets);
     } else if(game == "OCP"){
-        cout << "En construccion" << endl;
+        cfr_ocp(os_regret, os_strategy, os_inf_sets);
     } else if(game == "Dudo") {
         cout << "En construccion" << endl;
     } else if (game == "Domino") {

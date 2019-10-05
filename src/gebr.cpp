@@ -5,6 +5,7 @@
 #include <iomanip>
 #include "algorithms/GEBR.cpp"
 #include "games/KuhnPoker.hpp"
+#include "games/OCP.hpp"
 using namespace std;
 
 void gebr_kuhn(ifstream &is_inf_sets, ifstream &is_strategy, ostream &os_eval) {
@@ -12,6 +13,13 @@ void gebr_kuhn(ifstream &is_inf_sets, ifstream &is_strategy, ostream &os_eval) {
 	KuhnPoker kuhn;
 	GEBR<State, Action, Properties, InformationSet, Hash> gebr(&kuhn, is_inf_sets);
 	gebr.explotability(is_strategy, os_eval);
+}
+
+void gebr_ocp(ifstream &is_inf_sets, ifstream &is_strategy, ostream &os_eval) {
+    using namespace ocp;
+    OCP ocp(2);
+    GEBR<State, Action, Properties, InformationSet, Hash> gebr(&ocp, is_inf_sets);
+    gebr.explotability(is_strategy, os_eval);
 }
 
 int main(int argc, char **argv) {
@@ -32,7 +40,7 @@ int main(int argc, char **argv) {
     if(game == "KuhnPoker"){
         gebr_kuhn(is_inf_sets, is_strategy, os_eval);
     } else if(game == "OCP"){
-        cout << "En construccion" << endl;
+        gebr_ocp(is_inf_sets, is_strategy, os_eval);
     } else if(game == "Dudo") {
         cout << "En construccion" << endl;
     } else if (game == "Domino") {

@@ -5,7 +5,7 @@ CXXFLAGS= \
 	-I src/ \
 	-I ./
 GAMES=KuhnPoker OCP Dudo Domino
-DEPS=$(patsubst %, %.o, $(GAMES))
+DEPS=$(patsubst %, %.o, $(GAMES)) src/games/Game.hpp
 BINARIES=dfs gebr cfr
 
 %.o: src/games/%.cpp
@@ -13,6 +13,8 @@ BINARIES=dfs gebr cfr
 
 %.o: src/algorithms/%.cpp
 	$(CXX) -c $< -o $@ $(CXXFLAGS)
+
+all: dfs cfr gebr
 
 dfs: $(DEPS) src/dfs.cpp DFS.o
 	$(CXX) -o $@ $^ $(CXXFLAGS)
