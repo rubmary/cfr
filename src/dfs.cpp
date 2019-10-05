@@ -24,10 +24,19 @@ void dfs_kuhn() {
 }
 
 void dfs_ocp() {
+    ofstream os("information_sets.txt");
     using namespace ocp;
-    OCP ocp(4);
+    OCP ocp(3);
     DFS<State, Action, Properties, InformationSet, Hash> dfs({&ocp});
     dfs.start_dfs();
+    ocp.print_information_sets(os);
+    os.close();
+    ifstream is("information_sets.txt");
+    OCP ocp2(3);
+    ocp2.discover_information_sets(is);
+    ofstream os2("information_sets2.txt");
+    ocp2.print_information_sets(os2);
+
 }
 
 void dfs_dudo() {

@@ -17,7 +17,7 @@ void gebr_kuhn(ifstream &is_inf_sets, ifstream &is_strategy, ostream &os_eval) {
 
 void gebr_ocp(ifstream &is_inf_sets, ifstream &is_strategy, ostream &os_eval) {
     using namespace ocp;
-    OCP ocp(2);
+    OCP ocp(3);
     GEBR<State, Action, Properties, InformationSet, Hash> gebr(&ocp, is_inf_sets);
     gebr.explotability(is_strategy, os_eval);
 }

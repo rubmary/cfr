@@ -131,13 +131,14 @@ ostream& operator<<(ostream& os, const InformationSet& I) {
 }
 
 istream& operator>>(istream& is, InformationSet& I) {
-    int size, action;
+    int size, action, card;
     is >> size;
     I.history.resize(size);
     for(int i = 0; i < size; i++) {
         is >> action;
         I.history[i] = Action{action};
     }
-    is >> I.card;
+    is >> card;
+    I.card = card;
     return is;
 }
