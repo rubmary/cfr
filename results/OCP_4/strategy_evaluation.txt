@@ -1,0 +1,3 @@
+Best response for player 1: -0.040735
+Best response for player 2: 0.0420806
+Explotability: 0.00134565
