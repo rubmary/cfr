@@ -35,9 +35,7 @@
 boost/
 
 # Ejecutables
-dfs
-cfr
-gebr
+targets/
 
 # Outpus y regret
 output/

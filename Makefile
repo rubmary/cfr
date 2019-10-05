@@ -7,6 +7,9 @@ CXXFLAGS= \
 GAMES=KuhnPoker OCP Dudo Domino
 DEPS=$(patsubst %, %.o, $(GAMES)) src/games/Game.hpp
 BINARIES=dfs gebr cfr
+TARGETS=targets/
+
+all: dfs cfr gebr
 
 %.o: src/games/%.cpp
 	$(CXX) -c $< -o $@ $(CXXFLAGS)
@@ -14,16 +17,14 @@ BINARIES=dfs gebr cfr
 %.o: src/algorithms/%.cpp
 	$(CXX) -c $< -o $@ $(CXXFLAGS)
 
-all: dfs cfr gebr
-
 dfs: $(DEPS) src/dfs.cpp DFS.o
-	$(CXX) -o $@ $^ $(CXXFLAGS)
+	$(CXX) -o $(TARGETS)$@ $^ $(CXXFLAGS)
 
 cfr: $(DEPS) src/cfr.cpp CFR.o
-	$(CXX) -o $@ $^ $(CXXFLAGS)
+	$(CXX) -o $(TARGETS)$@ $^ $(CXXFLAGS)
 
 gebr: $(DEPS) src/gebr.cpp GEBR.o
-	$(CXX) -o $@ $^ $(CXXFLAGS)
+	$(CXX) -o $(TARGETS)$@ $^ $(CXXFLAGS)
 
 .PHONY: clean
 

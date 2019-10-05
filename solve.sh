@@ -2,21 +2,26 @@
 
 function solve_game() {
 	echo "Making dirs"
-	mkdir -p graphics/$1
-	mkdir -p regret/$1
-	mkdir -p results/$1
+	mkdir -p graphics/$2
+	mkdir -p regret/$2
+	mkdir -p results/$2
 
 	echo "Running cfr"
-	./cfr $1
+	./targets/cfr $@
 	echo "Running gebr"
-	./gebr $1
+	./targets/gebr $@
 	echo "Creating graphics"
-	python src/graph.py $1
+	python src/graph.py $2
 }
 
-echo "Compiling programs"
-make cfr
-make gebr
-solve_game "KuhnPoker"
-echo "Cleaning"
-make clean
+GAME=$1
+FOLDER=$1
+shift 1
+for var in "$@"
+do
+	FOLDER="${FOLDER}_${var}"
+done
+echo "FOLDER: ${FOLDER}"
+echo "Compiling programs..."
+make
+solve_game $GAME $FOLDER $@
