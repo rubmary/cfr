@@ -31,5 +31,5 @@ if __name__ == "__main__":
         exit(0);
     name = sys.argv[1]
     path_input = "regret/" + name + "/regret.txt"
-    path_graph = "graphics/" + name + "/" + name + ".png"
+    path_graph = "graphics/" + name + ".png"
     make_plot(path_input, path_graph, name)

@@ -2,7 +2,7 @@
 
 function solve_game() {
 	echo "Making dirs"
-	mkdir -p graphics/$2
+	mkdir -p graphics/
 	mkdir -p regret/$2
 	mkdir -p results/$2
 
