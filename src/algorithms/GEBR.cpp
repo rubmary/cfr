@@ -120,9 +120,11 @@ void GEBR<State, Action, Properties, InformationSet, Hash>::read_sigma(istream& 
 template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
 double GEBR<State, Action, Properties, InformationSet, Hash>::explotability(istream& is, ostream& os) {
     read_sigma(is);
+    double u = game -> expected_value(1, sigma);
     pass1();
     double u1 = best_response(1);
     double u2 = best_response(2);
+    os << "Game value: " << u << endl;
     os << "Best response for player 1: " << u1 << endl;
     os << "Best response for player 2: " << u2 << endl;
     os << "Explotability: " << u1 + u2 << endl;

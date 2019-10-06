@@ -145,6 +145,39 @@ public:
     */
     virtual double utility(int i) = 0;
 
+    /**
+    * Calcula el valor esperado de la ganancia del
+    * jugador i
+    */
+    double expected_value(int i, const vector<vector<double>> &s) {
+        double u = 0, N = 0;
+        first_state();
+        do {
+            u += expected_value_dfs(i, s)*state_weight();
+            N++;
+        } while(next_state());
+        return u/N;
+    }
+
+    virtual double state_weight() {
+        return 1;
+    };
+
+    double expected_value_dfs(int i, const vector<vector<double>> &s) {
+        if (terminal_state()) {
+            return utility(i);
+        }
+        double u = 0;
+        vector<Action> game_actions = actions();
+        int inf_set = information_set_id();
+        for (int a = 0; a < (int) game_actions.size(); a++)  {
+            update_state(game_actions[a]);
+            u += expected_value_dfs(i, s)*s[inf_set][a];
+            revert_state();
+        }
+        return u;
+    }
+
     /*
     * Imprime cosas para testing
     */
