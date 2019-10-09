@@ -150,12 +150,12 @@ public:
     * jugador i con la estrategia s
     */
     double expected_value(int i, const vector<vector<double>> &s) {
-        double u = 0, N = 0;
+        double u = 0, N = 0, w;
         first_state();
         do {
-            double u1 = expected_value_dfs(i, s);
-            u += u1*state_weight();
-            N++;
+            w = state_weight();
+            u += expected_value_dfs(i, s)*w;
+            N += w;
         } while(next_state());
         return u/N;
     }

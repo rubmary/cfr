@@ -153,6 +153,23 @@ double Dudo::utility(int i) {
     return (winner == i ? 1 : -1)*properties.dudos[D1][D2];
 }
 
+double Dudo::factorial(int n) {
+    double ans = 1;
+    for (int i = 1; i <= n; i++)
+        ans *= i;
+    return ans;
+}
+
+double Dudo::state_weight() {
+    double w1 = factorial(properties.D1);
+    double w2 = factorial(properties.D2);
+    for (int i = 0; i < properties.K; i++) {
+        w1 /= factorial(state.dice[0][i]);
+        w2 /= factorial(state.dice[1][i]);
+    }
+    return w1*w2;
+}
+
 void Dudo::print() {
     int K = properties.K;
 

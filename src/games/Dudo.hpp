@@ -78,6 +78,8 @@ class Dudo : public Game<State, Action, Properties, InformationSet, Hash>
     */
     bool next_sequence(vector <int> &P, int N);
 
+    double factorial(int n);
+
 public:
     Dudo(int K, int D1, int D2, vector<vector<double>> &dudos);
 
@@ -102,6 +104,8 @@ public:
     bool terminal_state();
 
     double utility(int i);
+
+    double state_weight();
 
     void print();
 };

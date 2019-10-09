@@ -88,7 +88,7 @@ double GEBR<State, Action, Properties, InformationSet, Hash>::pass2(int i, int d
 
 template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
 double GEBR<State, Action, Properties, InformationSet, Hash>::best_response(int i) {
-    double v = 0;
+    double v = 0, w;
     int k = 0;
     depths[i-1].insert(-1);
     for (auto it = depths[i-1].rbegin(); it != depths[i-1].rend(); ++it) {
@@ -96,8 +96,9 @@ double GEBR<State, Action, Properties, InformationSet, Hash>::best_response(int 
         k = 0;
         game -> first_state();
         do {
-            v += pass2(i, *it, 0, 1);
-            k++;
+            w = game -> state_weight();
+            v += pass2(i, *it, 0, 1)*w;
+            k += w;
         } while(game -> next_state());
     }
     return v/k;
