@@ -1,0 +1,4 @@
+Game value: 0.5
+Best response for player 1: 0.5
+Best response for player 2: -0.5
+Explotability: 0

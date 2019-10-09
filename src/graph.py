@@ -23,13 +23,17 @@ def make_plot(path_input, path_graph, name):
     plt.ylabel('Regret (max)')
     plt.xlabel('Iteraciones')
     plt.legend()
-    plt.savefig(path_graph)
+    plt.savefig(path_graph + name + ".png")
 
 if __name__ == "__main__":
     if(len(sys.argv) < 2):
-        print("Debes introducir el nombre del juego")
+        print("Debes introducir el path del juego")
         exit(0);
-    name = sys.argv[1]
-    path_input = "regret/" + name + "/regret.txt"
-    path_graph = "graphics/" + name + ".png"
+    subpath = sys.argv[1]
+    game = subpath.split('/')[0]
+    path_input = "regret/" + subpath + "/regret.txt"
+    path_graph = "graphics/" + game + "/"
+    name = subpath.replace('/', '(').replace('_', ',')
+    if '(' in name:
+        name = name + ')'
     make_plot(path_input, path_graph, name)

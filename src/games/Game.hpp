@@ -156,6 +156,7 @@ public:
             w = state_weight();
             u += expected_value_dfs(i, s)*w;
             N += w;
+            // cout << u << ' ' << w << ' ' << N << endl;
         } while(next_state());
         return u/N;
     }
@@ -170,6 +171,7 @@ public:
     */
     double expected_value_dfs(int i, const vector<vector<double>> &s) {
         if (terminal_state()) {
+            // cout << utility(i) << endl;
             return utility(i);
         }
         double u = 0;
@@ -181,6 +183,7 @@ public:
             u += u1*s[inf_set][a];
             revert_state();
         }
+        // cout << u << endl;
         return u;
     }
 
