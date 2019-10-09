@@ -147,13 +147,14 @@ public:
 
     /**
     * Calcula el valor esperado de la ganancia del
-    * jugador i
+    * jugador i con la estrategia s
     */
     double expected_value(int i, const vector<vector<double>> &s) {
         double u = 0, N = 0;
         first_state();
         do {
-            u += expected_value_dfs(i, s)*state_weight();
+            double u1 = expected_value_dfs(i, s);
+            u += u1*state_weight();
             N++;
         } while(next_state());
         return u/N;
@@ -163,6 +164,10 @@ public:
         return 1;
     };
 
+    /**
+    * Dfs para calcular el valor esperado de la ganancia del
+    * jugador i con la estrategia s
+    */
     double expected_value_dfs(int i, const vector<vector<double>> &s) {
         if (terminal_state()) {
             return utility(i);
@@ -172,7 +177,8 @@ public:
         int inf_set = information_set_id();
         for (int a = 0; a < (int) game_actions.size(); a++)  {
             update_state(game_actions[a]);
-            u += expected_value_dfs(i, s)*s[inf_set][a];
+            double u1 = expected_value_dfs(i, s);
+            u += u1*s[inf_set][a];
             revert_state();
         }
         return u;

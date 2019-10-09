@@ -27,6 +27,7 @@ void Dudo::initial_state() {
     vector<int>dice_number({properties.D1, properties.D2});
     for (int i = 0; i < 2; i++) {
         state.dice[i].resize(properties.K);
+        fill(state.dice[i].begin(), state.dice[i].end(), 0);
         for(int j = 0; j < dice_number[i]; j++)
             state.dice[i][rand() % properties.K]++;
     }
@@ -189,7 +190,7 @@ void Dudo::print() {
 }
 
 ostream& operator<<(ostream& os, const InformationSet& I) {
-    os << I.dice.size()  << ' ';
+    os << I.dice.size() << ' ';
     for(auto die : I.dice) {
         os << die << ' ';
     }

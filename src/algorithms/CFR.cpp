@@ -21,7 +21,7 @@ CFR<State, Action, Properties, InformationSet, Hash>::CFR(
     game -> first_state();
     do{
         dfs_initialization();
-    }while(game -> next_state());
+    } while(game -> next_state());
 }
 
 
@@ -52,7 +52,7 @@ void CFR<State, Action, Properties, InformationSet, Hash>::update_strategy(int I
         sum_R += strategy[I][a];
     }
     for (int a = 0; a < N; a++) {
-        if (sum_R == 0)
+        if (abs(sum_R) <= EPS)
             strategy[I][a] = 1.00/N;
         else
             strategy[I][a] /= sum_R;
@@ -108,8 +108,12 @@ void CFR<State, Action, Properties, InformationSet, Hash>::normalize_strategy()
         double sum_strategy = 0;
         for (int a = 0; a < N; a++)
             sum_strategy += avg_s[I][a];
-        for (int a = 0; a < N; a++)
-            avg_s[I][a] /= sum_strategy;
+        for (int a = 0; a < N; a++) {
+            if (abs(sum_strategy) <= EPS)
+                avg_s[I][a] = 1.0/N;
+            else
+                avg_s[I][a] /= sum_strategy;
+        }
     }
 }
 
@@ -134,8 +138,6 @@ void CFR<State, Action, Properties, InformationSet, Hash>::train(int iterations,
             os << r[k] << ' ';
         }
         os << endl;
-        if (r[0] < EPS && r[1] < EPS && i > 100)
-            break;
     }
     normalize_strategy();
 }

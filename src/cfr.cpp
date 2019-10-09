@@ -6,8 +6,9 @@
 #include "algorithms/CFR.cpp"
 #include "games/KuhnPoker.hpp"
 #include "games/OCP.hpp"
+#include "games/Dudo.hpp"
 using namespace std;
-int iterations = 1000000;
+int iterations = 10000000;
 #define EPS 1e-5
 
 void cfr_kuhn(ostream& os_regret, ostream& os_strategy, ostream& os_inf_sets) {
@@ -26,6 +27,41 @@ void cfr_ocp(ostream& os_regret, ostream& os_strategy, ostream& os_inf_sets, int
     cfr.train(iterations, os_regret);
     cfr.print_strategy(os_strategy);
     ocp.print_information_sets(os_inf_sets);
+}
+
+void cfr_dudo(ostream& os_regret, ostream& os_strategy, ostream& os_inf_sets, int K, int D1, int D2) {
+    using namespace dudo;
+    ofstream tmp_os("output/dudo_regret.txt");
+    vector<vector<double>> dudos(D1 + 1, vector<double>(D2 + 1, 0));
+    dudos[0][1] = -1;
+    dudos[1][0] = 1;
+    for (int i = 1; i <= D1; i++) {
+        for (int j = 1; j <= D2; j++) {
+            if (i == 0) {
+                dudos[0][j] = -1;
+                continue;
+            }
+            if (j == 0) {
+                dudos[i][0] = 1;
+                continue;
+            }
+            if (i == D1 && j == D2)
+                continue;
+            Dudo dudo(K, i, j, dudos);
+            CFR<State, Action, Properties, InformationSet, Hash> cfr({&dudo}, EPS);
+            cfr.train(iterations, tmp_os);
+            vector<vector<double>> strategy = cfr.average_strategy();
+            ofstream tmp_os_s("output/dudo_s_1_1.txt");
+            dudos[i][j] = dudo.expected_value(1, strategy);
+            cfr.print_strategy(tmp_os_s);
+            cout << i << ' ' << j << ' ' << dudos[i][j] << endl;
+        }
+    }
+    Dudo dudo(K, D1, D2, dudos);
+    CFR<State, Action, Properties, InformationSet, Hash> cfr({&dudo}, EPS);
+    cfr.train(iterations, os_regret);
+    cfr.print_strategy(os_strategy);
+    dudo.print_information_sets(os_inf_sets);
 }
 
 int main(int argc, char **argv) {
@@ -55,7 +91,15 @@ int main(int argc, char **argv) {
         int N = atoi(argv[3]);
         cfr_ocp(os_regret, os_strategy, os_inf_sets, N);
     } else if(game == "Dudo") {
-        cout << "En construccion" << endl;
+        if (argc < 6) {
+            cout << "Debes introducir los parametros K, D1 y D2" << endl;
+            return 0;
+        }
+        int K, D1, D2;
+        K = atoi(argv[3]);
+        D1 = atoi(argv[4]);
+        D2 = atoi(argv[5]);
+        cfr_dudo(os_regret, os_strategy, os_inf_sets, K, D1, D2);
     } else if (game == "Domino") {
         cout << "En construccion" << endl;
     } else {

@@ -47,9 +47,17 @@ void dfs_dudo() {
             dudos[i][j] = 3*i + j;
         }
     }
-    Dudo dudo(2, 2, 2, dudos);
+    Dudo dudo(2, 1, 1, dudos);
     DFS<State, Action, Properties, InformationSet, Hash> dfs({&dudo});
     dfs.start_dfs();
+    ofstream os("information_sets.txt");
+    dudo.print_information_sets(os);
+    os.close();
+    ifstream is("information_sets.txt");
+    Dudo dudo2(2, 1, 1, dudos);
+    dudo2.discover_information_sets(is);
+    ofstream os2("information_sets2.txt");
+    dudo2.print_information_sets(os2);
 }
 
 void dfs_domino() {
