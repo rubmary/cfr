@@ -8,7 +8,7 @@
 #include "games/OCP.hpp"
 #include "games/Dudo.hpp"
 using namespace std;
-int iterations = 10000000;
+int iterations = 1000000;
 #define EPS 1e-5
 
 void cfr_kuhn(ostream& os_regret, ostream& os_strategy, ostream& os_inf_sets) {
@@ -31,29 +31,24 @@ void cfr_ocp(ostream& os_regret, ostream& os_strategy, ostream& os_inf_sets, int
 
 void cfr_dudo(ostream& os_regret, ostream& os_strategy, ostream& os_inf_sets, int K, int D1, int D2) {
     using namespace dudo;
-    vector<vector<double>> dudos(D1 + 1, vector<double>(D2 + 1, 0));
-    ofstream tmp_os("output/dudo_regret.txt");
-    dudos[0][1] = -1;
-    dudos[1][0] = 1;
-    for (int i = 1; i <= D1; i++) {
-        for (int j = 1; j <= D2; j++) {
-            if (i == 0) {
-                dudos[0][j] = -1;
+    int N = max(D1, D2);
+    vector<vector<double>> dudos(N+1, vector<double>(N+1, 0));
+    for (int i = 0; i <= N; i++) {
+        dudos[i][0] = 1;
+        dudos[0][i] = -1; 
+    }
+    string tmp;
+    for (int i = 1; i <= N; i++) {
+        for (int j = 1; j <= N; j++) {
+            if (i >= D1 && j >= D2)
                 continue;
-            }
-            if (j == 0) {
-                dudos[i][0] = 1;
-                continue;
-            }
-            if (i == D1 && j == D2)
-                continue;
-            Dudo dudo(K, i, j, dudos);
-            CFR<State, Action, Properties, InformationSet, Hash> cfr({&dudo}, EPS);
-            cfr.train(iterations, tmp_os);
-            vector<vector<double>> strategy = cfr.average_strategy();
-            dudos[i][j] = dudo.expected_value(1, strategy);
-            cfr.print_strategy(tmp_os);
+            string path = "results/Dudo/";
+            path = path + to_string(K) + '_' + to_string(i) + '_' + to_string(j);
+            path = path + "/strategy_evaluation.txt";
+            ifstream is_expected_value(path.c_str());
+            is_expected_value >> tmp >> tmp >> dudos[i][j];
             cout << i << ' ' << j << ' ' << dudos[i][j] << endl;
+            is_expected_value.close();
         }
     }
     Dudo dudo(K, D1, D2, dudos);

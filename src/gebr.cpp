@@ -3,6 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <iomanip>
+#include <string>
 #include "algorithms/GEBR.cpp"
 #include "games/KuhnPoker.hpp"
 #include "games/OCP.hpp"
@@ -35,14 +36,24 @@ void gebr_dudo(
     )
 {
     using namespace dudo;
-    vector<vector<double>>dudos(3, vector<double>(3, 0));
-    for (int i = 0; i < (int) dudos.size(); i++) {
-        for (int j = 0; j < (int) dudos[i].size(); j++) {
-            if(i == 0) {
-                dudos[0][j] = -1;
-            } else if (j == 0) {
-                dudos[i][0] = 1;
-            }
+    string tmp;
+    int N = max(D1, D2);
+    vector<vector<double>>dudos(N+1, vector<double>(N+1, 0));
+    for (int i = 0; i <= N; i++) {
+        dudos[i][0] = 1;
+        dudos[0][i] = -1; 
+    }
+    for (int i = 1; i <= N; i++) {
+        for (int j = 1; j <= N; j++) {
+            if (i >= D1 && j >= D2)
+                break;
+            string path = "results/Dudo/";
+            path = path + to_string(K) + '_' + to_string(i) + '_' + to_string(j);
+            path = path + "/strategy_evaluation.txt";
+            ifstream is_expected_value(path.c_str());
+            is_expected_value >> tmp >> tmp >> dudos[i][j];
+            cout << i << ' ' << j << ' ' << dudos[i][j] << endl;
+            is_expected_value.close();
         }
     }
     Dudo dudo(K, D1, D2, dudos);
