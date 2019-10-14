@@ -7,6 +7,7 @@
 #include "games/KuhnPoker.hpp"
 #include "games/OCP.hpp"
 #include "games/Dudo.hpp"
+#include "games/Domino.hpp"
 using namespace std;
 int iterations = 1000000;
 #define EPS 1e-5
@@ -58,6 +59,25 @@ void cfr_dudo(ostream& os_regret, ostream& os_strategy, ostream& os_inf_sets, in
     dudo.print_information_sets(os_inf_sets);
 }
 
+void cfr_domino(
+    ostream& os_regret,
+    ostream& os_strategy,
+    ostream& os_inf_sets,
+    int max_point,
+    int initial_hand
+    )
+{
+    using namespace domino;
+    Domino domino(max_point, initial_hand);
+    CFR<State, Action, Properties, InformationSet, Hash> cfr({&domino}, EPS);
+    cout << "training..." << endl;
+    cfr.train(iterations, os_regret);
+    cout << "printing strategy" << endl;
+    cfr.print_strategy(os_strategy);
+    cout << "printing information sets" << endl;
+    domino.print_information_sets(os_inf_sets);
+}
+
 int main(int argc, char **argv) {
     srand(time(NULL));
     if(argc < 2) {
@@ -98,7 +118,14 @@ int main(int argc, char **argv) {
         D2 = atoi(argv[4]);
         cfr_dudo(os_regret, os_strategy, os_inf_sets, K, D1, D2);
     } else if (game == "Domino") {
-        cout << "En construccion" << endl;
+        if (argc < 4) {
+            cout << "Debes introducir el numero de puntos y la cantidad de fichas" << endl;
+            return 0;
+        }
+        int max_point, initial_hand;
+        max_point = atoi(argv[2]);
+        initial_hand = atoi(argv[3]);
+        cfr_domino(os_regret, os_strategy, os_inf_sets, max_point, initial_hand);
     } else {
         cout << "Error" << endl;
         cout << "Los juegos validos son:" << endl;
