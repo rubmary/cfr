@@ -340,6 +340,13 @@ ostream& operator <<(ostream& os, const byte& b) {
     return os;
 }
 
+istream& operator>>(istream& is, byte& b) {
+    int num;
+    is >> num;
+    b = byte{(unsigned char) num};
+    return is;
+}
+
 ostream& operator<<(ostream& os, const InformationSet& I) {
     os << I.history.size() << ' ';
     for (auto action : I.history) {
@@ -353,12 +360,7 @@ ostream& operator<<(ostream& os, const InformationSet& I) {
     return os;
 }
 
-istream& operator>>(istream& is, byte& b) {
-    int num;
-    is >> num;
-    b = byte{(unsigned char) num};
-    return is;
-}
+
 
 istream& operator>>(istream& is, InformationSet& I) {
     int size;
@@ -367,6 +369,7 @@ istream& operator>>(istream& is, InformationSet& I) {
     for (int i = 0; i < size; i++)
         is >> I.history[i];
     is >> size;
+    I.hand.resize(size);
     for (int i = 0; i < size; i++)
         is >> I.hand[i];
     is >> I.card_taken;

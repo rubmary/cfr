@@ -8,6 +8,7 @@
 #include "games/KuhnPoker.hpp"
 #include "games/OCP.hpp"
 #include "games/Dudo.hpp"
+#include "games/Domino.hpp"
 using namespace std;
 
 void gebr_kuhn(ifstream &is_inf_sets, ifstream &is_strategy, ostream &os_eval)
@@ -61,6 +62,20 @@ void gebr_dudo(
     gebr.explotability(is_strategy, os_eval);
 }
 
+void gebr_domino(
+    ifstream &is_inf_sets,
+    ifstream &is_strategy,
+    ostream &os_eval,
+    int max_point,
+    int initial_hand
+    )
+{
+    using namespace domino;
+    Domino domino(max_point, initial_hand);
+    GEBR<State, Action, Properties, InformationSet, Hash> gebr(&domino, is_inf_sets);
+    gebr.explotability(is_strategy, os_eval);
+}
+
 int main(int argc, char **argv) {
     if(argc < 2) {
         cout << "Debes introducir el nombre del juego";
@@ -101,7 +116,14 @@ int main(int argc, char **argv) {
         D2 = atoi(argv[4]);
         gebr_dudo(is_inf_sets, is_strategy, os_eval, K, D1, D2);
     } else if (game == "Domino") {
-        cout << "En construccion" << endl;
+        if (argc < 4) {
+            cout << "Debes introducir los parametros: max_point, initial_hand" << endl;
+            return 0;
+        }
+        int max_point, initial_hand;
+        max_point = atoi(argv[2]);
+        initial_hand = atoi(argv[3]);
+        gebr_domino(is_inf_sets, is_strategy, os_eval, max_point, initial_hand);
     } else {
         cout << "Error" << endl;
         cout << "Los juegos validos son:" << endl;
