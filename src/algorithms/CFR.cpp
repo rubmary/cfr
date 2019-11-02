@@ -31,11 +31,13 @@ void CFR<State, Action, Properties, InformationSet, Hash>::dfs_initialization() 
         return;
     vector<Action> actions = game -> actions();
     int N = actions.size();
-    int I = game -> information_set_id();
-    R[I] = vector<double>(N, 0);
-    strategy[I] = vector<double>(N, 0);
-    avg_s[I] = vector<double>(N, 0);
-    player[I] = game -> player();
+    if (N > 1) {
+        int I = game -> information_set_id();
+        R[I] = vector<double>(N, 0);
+        strategy[I] = vector<double>(N, 0);
+        avg_s[I] = vector<double>(N, 0);
+        player[I] = game -> player();
+    }
     for (auto action : actions) {
         game -> update_state(action);
         dfs_initialization();
@@ -73,23 +75,24 @@ double CFR<State, Action, Properties, InformationSet, Hash>::dfs(int i, double p
     if (game -> terminal_state()) {
         return game -> utility(i);
     }
-    int I = game -> information_set_id();
+
     vector <Action> actions = game -> actions();
     int N = actions.size();
+    int I = N > 1 ? game -> information_set_id() : -1;
     double node_util = 0;
     vector <double> util(N, 0);
     int current_player = game -> player();
     for(int k = 0; k < N; k++) {
-        Action action = actions[k];
-        game -> update_state(action);        
+        double action_strategy = N > 1 ? strategy[I][k] : 1;
+        game -> update_state(actions[k]);
         if (current_player == 1)
-            util[k] = dfs(i, strategy[I][k]*p1, p2);
+            util[k] = dfs(i, action_strategy*p1, p2);
         else
-            util[k] = dfs(i, p1, strategy[I][k]*p2);
-        node_util += strategy[I][k]*util[k];
+            util[k] = dfs(i, p1, action_strategy*p2);
+        node_util += action_strategy*util[k];
         game -> revert_state();
     }
-    if (current_player == i) {
+    if (current_player == i && N > 1) {
         double pi_op = (i == 1) ? p2 : p1;
         double pi    = (i == 1) ? p1 : p2;
         for (int k = 0; k < N; k++)

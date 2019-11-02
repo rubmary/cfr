@@ -21,12 +21,14 @@ void GEBR<State, Action, Properties, InformationSet, Hash>::discover_tree(int d)
     if(game -> terminal_state()) {
         return;
     }
-    int I = game -> information_set_id();
     vector<Action> actions = game -> actions();
     int total_actions = actions.size();
-    if(t[I].empty()){
-        t[I].resize(total_actions, 0);
-        b[I].resize(total_actions, 0);
+    if (total_actions > 1) {
+        int I = game -> information_set_id();
+        if(t[I].empty()){
+            t[I].resize(total_actions, 0);
+            b[I].resize(total_actions, 0);
+        }
     }
     depths[game -> player()-1].insert(d);
     for (auto action : actions) {
@@ -49,16 +51,19 @@ double GEBR<State, Action, Properties, InformationSet, Hash>::pass2(int i, int d
     if(game -> terminal_state()) {
         return game -> utility(i);
     }
-    int I = game -> information_set_id();
-    double v = 0;
     vector <Action> actions = game -> actions();
+    int N = actions.size();
+    int I = N > 1 ? game -> information_set_id() : 1;
+    double v = 0;
     if (game -> player() == i && l > d) {
         Action action = actions[0];
-        double max_value = t[I][0]/b[I][0];
-        for (int k = 0; k < (int) actions.size(); k++) {
-            if (t[I][k]/b[I][k] > max_value) {
-                action = actions[k];
-                max_value = t[I][k]/b[I][k];
+        if (N > 1) {
+            double max_value = t[I][0]/b[I][0];
+            for (int k = 0; k < N; k++) {
+                if (t[I][k]/b[I][k] > max_value) {
+                    action = actions[k];
+                    max_value = t[I][k]/b[I][k];
+                }
             }
         }
         game -> update_state(action);
@@ -69,15 +74,16 @@ double GEBR<State, Action, Properties, InformationSet, Hash>::pass2(int i, int d
     int a = 0;
     for (auto action : actions) {
         double pi2 = pi;
+        double sigma_inf_set = N > 1 ? sigma[I][a] : 1;
         if (game -> player() != i){
-            pi2 *= sigma[I][a];
+            pi2 *= sigma_inf_set;
         }
         game -> update_state(action);
         double v2 = pass2(i, d, l+1, pi2); 
         game -> revert_state();
         if (game -> player() != i) {
-            v += sigma[I][a]*v2;
-        } else if(l == d) {
+            v += sigma_inf_set*v2;
+        } else if(l == d && N > 1) {
             t[I][a] += v2*pi;
             b[I][a] += pi;
         }

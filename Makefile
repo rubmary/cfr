@@ -9,7 +9,7 @@ DEPS=$(patsubst %, %.o, $(GAMES)) src/games/Game.hpp
 BINARIES=dfs gebr cfr
 TARGETS=targets/
 
-all: dfs cfr gebr
+all: dfs cfr gebr count
 
 %.o: src/games/%.cpp
 	$(CXX) -c $< -o $@ $(CXXFLAGS)
@@ -26,7 +26,11 @@ cfr: $(DEPS) src/cfr.cpp CFR.o
 gebr: $(DEPS) src/gebr.cpp GEBR.o
 	$(CXX) -o $(TARGETS)$@ $^ $(CXXFLAGS)
 
+count: $(DEPS) src/count.cpp GEBR.o
+	$(CXX) -o $(TARGETS)$@ $^ $(CXXFLAGS)
+
 .PHONY: clean
 
 clean:
+	cd targets/
 	rm -f $(BINARIES) *.o

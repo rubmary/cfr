@@ -360,8 +360,6 @@ ostream& operator<<(ostream& os, const InformationSet& I) {
     return os;
 }
 
-
-
 istream& operator>>(istream& is, InformationSet& I) {
     int size;
     is >> size;

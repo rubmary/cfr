@@ -25,6 +25,7 @@ protected:
     unordered_map<InformationSet, int, Hash> I;
     vector<vector<int>> player_inf_sets = vector<vector<int>>(2);
     int information_sets = 0;
+    long long nodes = (long long) 1;
 
 public:
     /**
@@ -47,16 +48,17 @@ public:
     * Dfs para descubrir los conjuntos de informacion
     */
     virtual void inf_sets_dfs() {
+        nodes++;
         if(terminal_state()){
             return;
         }
         InformationSet inf_set = information_set();
-        if(I.find(inf_set) == I.end()) {
+        vector<Action> game_actions = actions();
+        if(I.find(inf_set) == I.end() && game_actions.size() > 1) {
             I[inf_set] = information_sets;
             player_inf_sets[player()-1].push_back(information_sets);
             information_sets++;
         }
-        vector<Action> game_actions = actions();
         for(auto action : game_actions) {
             update_state(action);
             inf_sets_dfs();
@@ -176,15 +178,24 @@ public:
         }
         double u = 0;
         vector<Action> game_actions = actions();
-        int inf_set = information_set_id();
-        for (int a = 0; a < (int) game_actions.size(); a++)  {
+        int N = game_actions.size();
+        int inf_set = -1;
+        if (N > 1) {
+            inf_set = information_set_id();
+        }
+        for (int a = 0; a < N; a++)  {
+            double strategy = N > 1 ? s[inf_set][a] : 1;
             update_state(game_actions[a]);
             double u1 = expected_value_dfs(i, s);
-            u += u1*s[inf_set][a];
+            u += u1*strategy;
             revert_state();
         }
         // cout << u << endl;
         return u;
+    }
+
+    long long total_nodes() {
+        return nodes;
     }
 
     /*
