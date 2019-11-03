@@ -41,6 +41,6 @@ initialization:
 .PHONY: clean
 
 clean:
-	rm -f $(BINARIES) *.o
+	rm -f *.o
 	cd targets/
 	rm -f $(BINARIES) *.o
