@@ -150,8 +150,6 @@ double Dudo::utility(int i) {
     } else {
         --D1;
     }
-    // cout << "Utility: " << D1 << ' ' << D2 << ' ' << properties.dudos[D1][D2] << endl;
-    // cout << (winner == i ? -1 : 1)*properties.dudos[D1][D2] << endl;
     return (winner == i ? -1 : 1)*properties.dudos[D1][D2];
 }
 

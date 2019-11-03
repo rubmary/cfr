@@ -128,8 +128,7 @@ long long CFR<State, Action, Properties, InformationSet, Hash>::train(long long 
     vector <vector<int>> information_sets(2);
     auto total_seconds = (duration<long int, ratio<1, 1000000>>) (long long) sec*1000000;
     auto accumulated_time = (duration<long int, ratio<1, 1000000>>)0;
-    long long slide = sec*1000;
-    long long i, j = 0, j0 = 0;
+    long long i, next = 0, pot10 = 1;
     for (i = 0; ; i++) {
         auto start = high_resolution_clock::now();
         for (int k = 1; k <= 2; k++){
@@ -139,11 +138,13 @@ long long CFR<State, Action, Properties, InformationSet, Hash>::train(long long 
         auto stop = high_resolution_clock::now();
         accumulated_time = accumulated_time + duration_cast<microseconds>(stop-start);
 
-        if(accumulated_time > (duration<long int, ratio<1, 1000000>>) slide*j) {
-            if (j0 < 1000){
-                j0++;
+        if(i == next) {
+            if (next < 1000){
+                next++;
             } else {
-                j++;
+                if (next == pot10*1000)
+                    pot10*=100;
+                next += pot10;
             }
             vector <double> r(2, 0);
             os << i << ' ';
