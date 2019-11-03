@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pylab as plt
 import sys
 MAX_VAL = 2e7
