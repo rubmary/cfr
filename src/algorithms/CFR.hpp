@@ -81,7 +81,7 @@ public:
     *   parametros
     *   @iterations:    numero de iteraciones
     */
-    void train(int iterations, ostream& os = cout);
+    long long train(int total_seconds, ostream& os = cout);
 
     /**
     *   average_strategy

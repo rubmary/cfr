@@ -4,8 +4,10 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <chrono>
 #include "CFR.hpp"
 using namespace std;
+using namespace std::chrono;
 
 template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
 CFR<State, Action, Properties, InformationSet, Hash>::CFR(
@@ -121,14 +123,20 @@ void CFR<State, Action, Properties, InformationSet, Hash>::normalize_strategy()
 }
 
 template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
-void CFR<State, Action, Properties, InformationSet, Hash>::train(int iterations, ostream& os)
+long long CFR<State, Action, Properties, InformationSet, Hash>::train(int sec, ostream& os)
 {
     vector <vector<int>> information_sets(2);
-    for (int i = 0; i < iterations; i++) {
-        for (int k = 1; k <=2; k++){
+    auto total_seconds = (duration<long int, ratio<1, 1000000>>) (long long) sec*1000000;
+    auto accumulated_time = (duration<long int, ratio<1, 1000000>>)0;
+    long long i;
+    for (i = 0; ; i++) {
+        auto start = high_resolution_clock::now();
+        for (int k = 1; k <= 2; k++){
             initialize_game();
             dfs(k, 1, 1);
         }
+        auto stop = high_resolution_clock::now();
+        accumulated_time = accumulated_time + duration_cast<microseconds>(stop-start);
         vector <double> r(2, 0);
         for (int k = 0; k < 2; k++) {
             for (auto I : game->player_information_sets(k+1)) {
@@ -141,8 +149,11 @@ void CFR<State, Action, Properties, InformationSet, Hash>::train(int iterations,
             os << r[k] << ' ';
         }
         os << endl;
+        if (accumulated_time >= total_seconds)
+            break;
     }
     normalize_strategy();
+    return i;
 }
 
 template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>

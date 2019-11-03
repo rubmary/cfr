@@ -9,14 +9,17 @@
 #include "games/Dudo.hpp"
 #include "games/Domino.hpp"
 using namespace std;
-int iterations = 1000000;
+int total_seconds = 300;
 #define EPS 1e-5
 
 void cfr_kuhn(ostream& os_regret, ostream& os_strategy, ostream& os_inf_sets) {
     using namespace kuhn_poker;
     KuhnPoker kuhn_poker;
     CFR<State, Action, Properties, InformationSet, Hash> cfr({&kuhn_poker}, EPS);
-    cfr.train(iterations, os_regret);
+    cout << "training..." << endl;
+    long long iterations = cfr.train(total_seconds, os_regret);
+    cout << "Iterations = " << iterations << endl;
+    cout << "finished training" << endl;
     cfr.print_strategy(os_strategy);
     kuhn_poker.print_information_sets(os_inf_sets);
 }
@@ -25,7 +28,7 @@ void cfr_ocp(ostream& os_regret, ostream& os_strategy, ostream& os_inf_sets, int
     using namespace ocp;
     OCP ocp(N);
     CFR<State, Action, Properties, InformationSet, Hash> cfr({&ocp}, EPS);
-    cfr.train(iterations, os_regret);
+    cfr.train(total_seconds, os_regret);
     cfr.print_strategy(os_strategy);
     ocp.print_information_sets(os_inf_sets);
 }
@@ -54,7 +57,7 @@ void cfr_dudo(ostream& os_regret, ostream& os_strategy, ostream& os_inf_sets, in
     }
     Dudo dudo(K, D1, D2, dudos);
     CFR<State, Action, Properties, InformationSet, Hash> cfr({&dudo}, EPS);
-    cfr.train(iterations, os_regret);
+    cfr.train(total_seconds, os_regret);
     cfr.print_strategy(os_strategy);
     dudo.print_information_sets(os_inf_sets);
 }
@@ -71,7 +74,7 @@ void cfr_domino(
     Domino domino(max_point, initial_hand);
     CFR<State, Action, Properties, InformationSet, Hash> cfr({&domino}, EPS);
     cout << "training..." << endl;
-    cfr.train(iterations, os_regret);
+    cfr.train(total_seconds, os_regret);
     cout << "printing strategy" << endl;
     cfr.print_strategy(os_strategy);
     cout << "printing information sets" << endl;
