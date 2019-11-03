@@ -29,13 +29,14 @@ gebr: $(DEPS) src/gebr.cpp GEBR.o
 count: $(DEPS) src/count.cpp GEBR.o
 	$(CXX) -o $(TARGETS)$@ $^ $(CXXFLAGS)
 
-get_boost:
-	sudo mkdir -p boost
-	sudo wget https://dl.bintray.com/boostorg/release/1.71.0/source/boost_1_71_0.tar.bz2
-	sudo tar --bzip2 -xf boost_1_71_0.tar.bz2
-	sudo cp -r boost_1_71_0/boost/* boost/
-	sudo rm boost_1_71_0.tar.bz2
-	sudo rm -d -r boost_1_71_0
+initialization:
+	mkdir -p targets
+	mkdir -p boost
+	wget https://dl.bintray.com/boostorg/release/1.71.0/source/boost_1_71_0.tar.bz2
+	tar --bzip2 -xf boost_1_71_0.tar.bz2
+	cp -r boost_1_71_0/boost/* boost/
+	rm boost_1_71_0.tar.bz2
+	rm -d -r boost_1_71_0
 
 .PHONY: clean
 

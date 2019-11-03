@@ -7,19 +7,22 @@ def make_plot(path_input, path_graph, name):
     i = 0
     regret1 = []
     regret2 = []
+    iterations = []
     while i < MAX_VAL:
         line = file.readline()
         if not line:
             break
-        regret1.append(float(line.split()[0]))
-        regret2.append(float(line.split()[1]))
+        line = line.split()
+        iterations.append(int(line[0]))
+        regret1.append(float(line[1]))
+        regret2.append(float(line[2]))
         i = i+1
     file.close()
     plt.figure()
     plt.title(name)
     plt.xscale('log')
-    plt.plot(regret1, label='Jugador 1')
-    plt.plot(regret2, label='Jugador 2')
+    plt.plot(iterations, regret1, label='Jugador 1')
+    plt.plot(iterations, regret2, label='Jugador 2')
     plt.ylabel('Regret (max)')
     plt.xlabel('Iteraciones')
     plt.legend()

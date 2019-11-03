@@ -79,9 +79,9 @@ public:
     *   calcula una aproximacion de un equilibrio de Nash
     *   iterando multiples veces
     *   parametros
-    *   @iterations:    numero de iteraciones
+    *   @total_seconds:    numero de segundos que durara el entrenamiento
     */
-    long long train(int total_seconds, ostream& os = cout);
+    long long train(long long total_seconds, ostream& os = cout);
 
     /**
     *   average_strategy

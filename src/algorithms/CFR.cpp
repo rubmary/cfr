@@ -123,12 +123,13 @@ void CFR<State, Action, Properties, InformationSet, Hash>::normalize_strategy()
 }
 
 template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
-long long CFR<State, Action, Properties, InformationSet, Hash>::train(int sec, ostream& os)
+long long CFR<State, Action, Properties, InformationSet, Hash>::train(long long sec, ostream& os)
 {
     vector <vector<int>> information_sets(2);
     auto total_seconds = (duration<long int, ratio<1, 1000000>>) (long long) sec*1000000;
     auto accumulated_time = (duration<long int, ratio<1, 1000000>>)0;
-    long long i;
+    long long slide = sec*1000;
+    long long i, j = 0, j0 = 0;
     for (i = 0; ; i++) {
         auto start = high_resolution_clock::now();
         for (int k = 1; k <= 2; k++){
@@ -137,18 +138,27 @@ long long CFR<State, Action, Properties, InformationSet, Hash>::train(int sec, o
         }
         auto stop = high_resolution_clock::now();
         accumulated_time = accumulated_time + duration_cast<microseconds>(stop-start);
-        vector <double> r(2, 0);
-        for (int k = 0; k < 2; k++) {
-            for (auto I : game->player_information_sets(k+1)) {
-                double regret = 0;
-                for (int a = 0; a < (int) R[I].size(); a++)
-                    regret = max(regret, R[I][a]);
-                r[k] += regret;
+
+        if(accumulated_time > (duration<long int, ratio<1, 1000000>>) slide*j) {
+            if (j0 < 1000){
+                j0++;
+            } else {
+                j++;
             }
-            r[k] /= i+1;
-            os << r[k] << ' ';
+            vector <double> r(2, 0);
+            os << i << ' ';
+            for (int k = 0; k < 2; k++) {
+                for (auto I : game->player_information_sets(k+1)) {
+                    double regret = 0;
+                    for (int a = 0; a < (int) R[I].size(); a++)
+                        regret = max(regret, R[I][a]);
+                    r[k] += regret;
+                }
+                r[k] /= i+1;
+                os << r[k] << ' ';
+            }
+            os << endl;
         }
-        os << endl;
         if (accumulated_time >= total_seconds)
             break;
     }

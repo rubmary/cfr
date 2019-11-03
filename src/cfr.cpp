@@ -12,25 +12,40 @@ using namespace std;
 int total_seconds = 300;
 #define EPS 1e-5
 
-void cfr_kuhn(ostream& os_regret, ostream& os_strategy, ostream& os_inf_sets) {
+void cfr_kuhn(
+    ostream& os_regret,
+    ostream& os_strategy,
+    ostream& os_inf_sets,
+    ostream& os_iterations
+    )
+{
     using namespace kuhn_poker;
     KuhnPoker kuhn_poker;
     CFR<State, Action, Properties, InformationSet, Hash> cfr({&kuhn_poker}, EPS);
     cout << "training..." << endl;
     long long iterations = cfr.train(total_seconds, os_regret);
-    cout << "Iterations = " << iterations << endl;
+    os_iterations << "Total number of iterations:" << endl;
+    os_iterations << iterations << endl;
     cout << "finished training" << endl;
     cfr.print_strategy(os_strategy);
     kuhn_poker.print_information_sets(os_inf_sets);
 }
 
-void cfr_ocp(ostream& os_regret, ostream& os_strategy, ostream& os_inf_sets, int N) {
+void cfr_ocp(
+    ostream& os_regret,
+    ostream& os_strategy,
+    ostream& os_inf_sets,
+    ostream& os_iterations,
+    int N
+) {
     using namespace ocp;
     OCP ocp(N);
     CFR<State, Action, Properties, InformationSet, Hash> cfr({&ocp}, EPS);
-    cfr.train(total_seconds, os_regret);
+    long long iterations = cfr.train(total_seconds, os_regret);
     cfr.print_strategy(os_strategy);
     ocp.print_information_sets(os_inf_sets);
+    os_iterations << "Total number of iterations:" << endl;
+    os_iterations << iterations << endl;
 }
 
 void cfr_dudo(ostream& os_regret, ostream& os_strategy, ostream& os_inf_sets, int K, int D1, int D2) {
@@ -97,19 +112,21 @@ int main(int argc, char **argv) {
     string path_regret = "regret/" + folder + "/regret.txt";
     string path_strategy = "results/" + folder + "/strategy.txt";
     string path_inf_sets = "results/" + folder + "/information_sets.txt";
+    string path_iterations = "results/" + folder + "/iterations.txt";
     ofstream os_regret(path_regret.c_str());
     ofstream os_strategy(path_strategy.c_str());
     ofstream os_inf_sets(path_inf_sets.c_str());
+    ofstream os_iterations(path_iterations.c_str());
 
     if(game == "KuhnPoker"){
-        cfr_kuhn(os_regret, os_strategy, os_inf_sets);
+        cfr_kuhn(os_regret, os_strategy, os_inf_sets, os_iterations);
     } else if(game == "OCP"){
         if (argc < 3) {
             cout << "Debes introducir el numero de cartas" << endl;
             return 0;
         }
         int N = atoi(argv[2]);
-        cfr_ocp(os_regret, os_strategy, os_inf_sets, N);
+        cfr_ocp(os_regret, os_strategy, os_inf_sets, os_iterations, N);
     } else if(game == "Dudo") {
         if (argc < 5) {
             cout << "Debes introducir los parametros K, D1 y D2" << endl;
@@ -137,4 +154,8 @@ int main(int argc, char **argv) {
         cout << "\tDudo" << endl;
         cout << "\tDomino" << endl;
     }
+    os_regret.close();
+    os_strategy.close();
+    os_inf_sets.close();
+    os_iterations.close();
 }

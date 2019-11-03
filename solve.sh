@@ -30,8 +30,6 @@ done
 echo "GAME: ${GAME}"
 echo "FOLDER: ${FOLDER}"
 make_folders $GAME $FOLDER
-echo "Compiling programs..."
-make
 solve_game $GAME $@
 echo "Creating graphics"
 python src/graph.py $FOLDER
