@@ -1,2 +1,0 @@
-Total number of iterations:
-28457294
