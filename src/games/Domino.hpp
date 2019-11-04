@@ -51,11 +51,9 @@ struct State {
 struct InformationSet {
     vector<short int> history;
     vector<byte> hand;
-    byte card_taken;
     bool operator == (InformationSet const& inf_set) const {
         return  history == inf_set.history &&
-                hand == inf_set.hand &&
-                card_taken == inf_set.card_taken;
+                hand == inf_set.hand;
     }
 };
 

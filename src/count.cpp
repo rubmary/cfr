@@ -33,13 +33,13 @@ void dfs_ocp() {
 
 void dfs_dudo() {
     using namespace dudo;
-    int N = 4;
+    int N = 5;
     // vector <int> K({4, 5, 6, 3, 3, 3, 4, 4, 4, 5, 5, 5});
     // vector <int>D1({1, 1, 1, 2, 1, 2, 2, 1, 2, 2, 1, 2});
     // vector <int>D2({1, 1, 1, 1, 2, 2, 1, 2, 2, 1, 2, 2});
-    vector <int> K({3, 6, 6, 6});
-    vector <int>D1({1, 2, 1, 2});
-    vector <int>D2({1, 1, 2, 2});
+    vector <int> K({2, 3, 6, 6, 6});
+    vector <int>D1({1, 1, 2, 1, 2});
+    vector <int>D2({1, 1, 1, 2, 2});
     vector <vector <double>> d(6, vector<double> (6));
     for (int i = 0; i < N; i++) {
         Dudo dudo(K[i], D1[i], D2[i], d);

@@ -9,7 +9,7 @@
 #include "games/Dudo.hpp"
 #include "games/Domino.hpp"
 using namespace std;
-int total_seconds = 360;
+int total_seconds = 600;
 #define EPS 1e-5
 
 void cfr_kuhn(
@@ -48,7 +48,15 @@ void cfr_ocp(
     os_iterations << iterations << endl;
 }
 
-void cfr_dudo(ostream& os_regret, ostream& os_strategy, ostream& os_inf_sets, int K, int D1, int D2) {
+void cfr_dudo(
+    ostream& os_regret,
+    ostream& os_strategy,
+    ostream& os_inf_sets,
+    ostream& os_iterations,
+    int K,
+    int D1,
+    int D2
+) {
     using namespace dudo;
     int N = max(D1, D2);
     vector<vector<double>> dudos(N+1, vector<double>(N+1, 0));
@@ -70,11 +78,17 @@ void cfr_dudo(ostream& os_regret, ostream& os_strategy, ostream& os_inf_sets, in
             is_expected_value.close();
         }
     }
+    cout << "Inicializar dudo" << endl;
     Dudo dudo(K, D1, D2, dudos);
+    cout << "Crear cfr.." << endl;
     CFR<State, Action, Properties, InformationSet, Hash> cfr({&dudo}, EPS);
-    cfr.train(total_seconds, os_regret);
+    cout << "Entrenando..." << endl;
+    long long iterations = cfr.train(total_seconds, os_regret);
+    cout << "Cosas finales..." << endl;
     cfr.print_strategy(os_strategy);
     dudo.print_information_sets(os_inf_sets);
+    os_iterations << "Total number of iterations:" << endl;
+    os_iterations << iterations << endl;
 }
 
 void cfr_domino(
@@ -136,7 +150,7 @@ int main(int argc, char **argv) {
         K = atoi(argv[2]);
         D1 = atoi(argv[3]);
         D2 = atoi(argv[4]);
-        cfr_dudo(os_regret, os_strategy, os_inf_sets, K, D1, D2);
+        cfr_dudo(os_regret, os_strategy, os_inf_sets, os_iterations, K, D1, D2);
     } else if (game == "Domino") {
         if (argc < 4) {
             cout << "Debes introducir el numero de puntos y la cantidad de fichas" << endl;

@@ -95,7 +95,7 @@ double GEBR<State, Action, Properties, InformationSet, Hash>::pass2(int i, int d
 template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
 double GEBR<State, Action, Properties, InformationSet, Hash>::best_response(int i) {
     double v = 0, w;
-    int k = 0;
+    double k = 0;
     depths[i-1].insert(-1);
     for (auto it = depths[i-1].rbegin(); it != depths[i-1].rend(); ++it) {
         v = 0;

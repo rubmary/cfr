@@ -33,41 +33,102 @@ void Dudo::initial_state() {
     }
 }
 
+// void Dudo::first_state() {
+//     state.player = 1;
+//     state.history.clear();
+//     state.bidding_sequence = "";
+//     state.calls_bluff = false;
+//     state.dice.resize(2);
+//     vector<int>dice_number({properties.D1, properties.D2});
+//     for (int i = 0; i < 2; i++) {
+//         state.dice[i] = vector<int>(properties.K, 0);
+//         state.dice[i][properties.K-1] = dice_number[i];
+//     }
+// }
+
 void Dudo::first_state() {
     state.player = 1;
     state.history.clear();
     state.bidding_sequence = "";
     state.calls_bluff = false;
     state.dice.resize(2);
+    state.dice_faces.resize(2);
     vector<int>dice_number({properties.D1, properties.D2});
     for (int i = 0; i < 2; i++) {
         state.dice[i] = vector<int>(properties.K, 0);
-        state.dice[i][properties.K-1] = dice_number[i];
+        state.dice[i][0] = dice_number[i];
+        state.dice_faces[i] = vector<int>(dice_number[i], 0);
     }
 }
 
-bool Dudo::next_sequence(vector <int> &P, int N) {
-    for (int i = N-1; i > 0; i--) {
-        if (P[i] > 0) {
-            P[i-1]++;
-            P[N-1] = P[i] - 1;
-            if (i < N-1) {
-                P[i] = 0;
-            }
+// bool Dudo::next_sequence(vector <int> &P, int N) {
+//     for (int i = N-1; i > 0; i--) {
+//         if (P[i] > 0) {
+//             P[i-1]++;
+//             P[N-1] = P[i] - 1;
+//             if (i < N-1) {
+//                 P[i] = 0;
+//             }
+//             return true;
+//         }
+//     }
+//     return false;
+// }
+
+bool Dudo::next_sequence(vector<int> &P, int N) {
+    for (int i = N-1; i >=0 ; i--) {
+        if (P[i] < properties.K -1) {
+            P[i]++;
+            for (int j = i+1; j < N; j++)
+                P[j] = 0;
             return true;
         }
     }
     return false;
 }
 
+// bool Dudo::next_state() {
+//     int K = properties.K, D2 = properties.D2;
+//     if(next_sequence(state.dice[1], K)) {
+//         return true;
+//     }
+//     state.dice[1][0] = 0;
+//     state.dice[1][K-1] = D2;
+//     if(next_sequence(state.dice[0], K)) {
+//         return true;
+//     }
+//     return false;
+// }
+
 bool Dudo::next_state() {
-    int K = properties.K, D2 = properties.D2;
-    if(next_sequence(state.dice[1], K)) {
+    // vector <int>NN({properties.D1, properties.D2});
+    // for (int i = 0; i < 2; i++) {
+    //     cout << "Dados jugador " << i+1 << ":" << endl;;
+    //     cout << "\t";
+    //     for (int j = 0; j < properties.K; j++)
+    //         cout << state.dice[i][j] << ' ';
+    //     cout << endl << "\t";
+    //     for (int j = 0; j < NN[i]; j++)
+    //         cout << state.dice_faces[i][j] << ' ';
+    //     cout << endl;
+    // }
+    // cout <<"--------------" << endl;
+    int K = properties.K;
+    int D1 = properties.D1;
+    int D2 = properties.D2;
+
+    state.dice[1] = vector<int>(K, 0);
+    if(next_sequence(state.dice_faces[1], D2)) {
+        for (int i = 0; i < D2; i++)
+            state.dice[1][state.dice_faces[1][i]]++;
         return true;
     }
-    state.dice[1][0] = 0;
-    state.dice[1][K-1] = D2;
-    if(next_sequence(state.dice[0], K)) {
+    state.dice_faces[1] = vector<int>(D2, 0);
+    state.dice[1][0] = D2;
+    state.dice[0] = vector<int>(K, 0);
+    if(next_sequence(state.dice_faces[0], D1)) {
+        for (int i = 0; i < D1; i++)
+            state.dice[0][state.dice_faces[0][i]]++;
         return true;
     }
     return false;
@@ -143,7 +204,7 @@ double Dudo::utility(int i) {
     Action &bid = state.history[state.history.size() - 2];
     int total_dice, D1 = properties.D1, D2 = properties.D2;
     total_dice = state.dice[0][bid.face] + state.dice[1][bid.face];
-    int winner = (total_dice - bid.quantity < 0) ? (player()&1) + 1 : player();
+    int winner = (total_dice < bid.quantity) ? (player()&1) + 1 : player();
     if(winner == 1) {
         --D2;
         swap(D1, D2);
@@ -160,23 +221,31 @@ double Dudo::factorial(int n) {
     return ans;
 }
 
+// double Dudo::state_weight() {
+//     double w1 = factorial(properties.D1);
+//     double w2 = factorial(properties.D2);
+//     for (int i = 0; i < properties.K; i++) {
+//         w1 /= factorial(state.dice[0][i]);
+//         w2 /= factorial(state.dice[1][i]);
+//     }
+//     return w1*w2;
+// }
+
 double Dudo::state_weight() {
-    double w1 = factorial(properties.D1);
-    double w2 = factorial(properties.D2);
-    for (int i = 0; i < properties.K; i++) {
-        w1 /= factorial(state.dice[0][i]);
-        w2 /= factorial(state.dice[1][i]);
-    }
-    return w1*w2;
+    return 1;
 }
 
 void Dudo::print() {
     int K = properties.K;
-
+    vector <int>NN({properties.D1, properties.D2});
     for (int i = 0; i < 2; i++) {
         cout << "Dados jugador " << i+1 << ": ";
         for (int j = 0; j < properties.K; j++)
             cout << state.dice[i][j] << ' ';
+        cout << endl;
+        cout << "Jugador " << i+1 << ": ";
+        for (int j = 0; j < NN[i]; j++)
+            cout << state.dice_faces[i][j] << ' ';
         cout << endl;
     }
     cout << "Secuencia:" << endl;

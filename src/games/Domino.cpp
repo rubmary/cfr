@@ -125,14 +125,6 @@ InformationSet Domino::information_set()
     for(int i = p; i < (int) history.size(); i+=2)
         history[i] &= ~((1<<6)-1);
 
-    // tanken_mask
-    Piece taken_piece = state.pack[state.pack.size()-1];
-    byte taken_piece_mask = byte{0};
-    if(will_take()) {
-        taken_piece_mask = piece_mask(taken_piece);
-        // El septimo bit indica si se tomo la ficha o no
-        taken_piece_mask |= byte{1<<6};
-    }
     // hand
     int player_index = player() - 1;
     vector<byte>hand(state.hands[player_index].size(), byte{0});
@@ -140,7 +132,7 @@ InformationSet Domino::information_set()
     for (auto piece : state.hands[player_index]) {
         hand[i++] = piece_mask(piece);
     }
-    return InformationSet({history, hand, taken_piece_mask});
+    return InformationSet({history, hand});
 }
 
 bool Domino::place_to_left(const Piece& piece) {
@@ -356,7 +348,6 @@ ostream& operator<<(ostream& os, const InformationSet& I) {
     for (auto card: I.hand) {
         os << card << ' ';
     }
-    os << I.card_taken;
     return os;
 }
 
@@ -370,6 +361,5 @@ istream& operator>>(istream& is, InformationSet& I) {
     I.hand.resize(size);
     for (int i = 0; i < size; i++)
         is >> I.hand[i];
-    is >> I.card_taken;
     return is;
 }

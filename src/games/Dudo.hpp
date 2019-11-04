@@ -49,6 +49,7 @@ struct State {
     string bidding_sequence;
     bool calls_bluff;
     vector<Dice> dice;
+    vector <vector <int> > dice_faces;
 };
 
 struct InformationSet {
