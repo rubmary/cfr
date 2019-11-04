@@ -9,7 +9,7 @@
 #include "games/Dudo.hpp"
 #include "games/Domino.hpp"
 using namespace std;
-int total_seconds = 600;
+int total_seconds = 36000;
 #define EPS 1e-5
 
 void cfr_kuhn(
