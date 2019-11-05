@@ -9,7 +9,7 @@
 #include "games/Dudo.hpp"
 #include "games/Domino.hpp"
 using namespace std;
-int total_seconds = 600;
+int total_seconds = 36000;
 #define EPS 1e-5
 
 void cfr_kuhn(
@@ -95,6 +95,7 @@ void cfr_domino(
     ostream& os_regret,
     ostream& os_strategy,
     ostream& os_inf_sets,
+    ostream& os_iterations,
     int max_point,
     int initial_hand
     )
@@ -103,11 +104,13 @@ void cfr_domino(
     Domino domino(max_point, initial_hand);
     CFR<State, Action, Properties, InformationSet, Hash> cfr({&domino}, EPS);
     cout << "training..." << endl;
-    cfr.train(total_seconds, os_regret);
+    long long iterations = cfr.train(total_seconds, os_regret);
     cout << "printing strategy" << endl;
     cfr.print_strategy(os_strategy);
     cout << "printing information sets" << endl;
     domino.print_information_sets(os_inf_sets);
+    os_iterations << "Total number of iterations:" << endl;
+    os_iterations << iterations << endl;
 }
 
 int main(int argc, char **argv) {
@@ -159,7 +162,7 @@ int main(int argc, char **argv) {
         int max_point, initial_hand;
         max_point = atoi(argv[2]);
         initial_hand = atoi(argv[3]);
-        cfr_domino(os_regret, os_strategy, os_inf_sets, max_point, initial_hand);
+        cfr_domino(os_regret, os_strategy, os_inf_sets, os_iterations, max_point, initial_hand);
     } else {
         cout << "Error" << endl;
         cout << "Los juegos validos son:" << endl;
