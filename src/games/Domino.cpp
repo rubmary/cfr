@@ -77,19 +77,6 @@ bool Domino::next_state()
     return true;
 }
 
-bool Domino::will_take() {
-    set<Piece>&hand = state.hands[player()-1];
-    for (auto piece : hand) {
-        if(place_to_left(piece)){
-            return false;
-        }
-        if (place_to_right(piece)) {
-            return false;
-        }
-    }
-    return true;
-}
-
 // Los ultimos tres bytes representan la primera cara
 // los siguientes tres la segunda
 byte piece_mask(Piece piece) {
@@ -320,7 +307,6 @@ void Domino::print() {
         cout << "Winner: " << (u >= 0 ? 1 : 2) << endl;
         cout << "Puntos: " << abs(u) << endl;
     }else {
-        cout << "Tomara pieza? " << (will_take() ? "si" : "no") << endl;
         cout << "Conjunto de informacion: " << information_set() << endl;
     }
     cout << endl;

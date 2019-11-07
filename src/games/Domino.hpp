@@ -75,8 +75,6 @@ class Domino : public Game<State, Action, Properties, InformationSet, Hash>
 
     int opposite(int number, const Piece& piece);
 
-    bool will_take();
-
     int count_points(const set<Piece> &hand);
 
     void deal_cards();
