@@ -1,0 +1,4 @@
+Game value: 0.552069
+Best response for player 1: 0.553844
+Best response for player 2: -0.550142
+Explotability: 0.00370144
