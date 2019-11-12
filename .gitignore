@@ -40,7 +40,3 @@ targets/
 # Outpus y regret
 output/
 # regret/
-
-# Big strategies
-results/Dudo/5_2_2/information_sets.txt
-results/Dudo/5_2_2/strategy.txt
