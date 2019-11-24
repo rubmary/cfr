@@ -40,3 +40,7 @@ targets/
 # Outpus y regret
 output/
 # regret/
+
+# Estrategias muy grances
+results/Dudo/5_2_2/information_sets.txt
+results/Dudo/5_2_2/strategy.txt

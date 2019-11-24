@@ -103,7 +103,7 @@ double GEBR<State, Action, Properties, InformationSet, Hash>::best_response(int 
         game -> first_state();
         do {
             w = game -> state_weight();
-            v += pass2(i, *it, 0, 1)*w;
+            v += pass2(i, *it, 0, w)*w;
             k += w;
         } while(game -> next_state());
     }
