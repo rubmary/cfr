@@ -108,6 +108,14 @@ InformationSet Domino::information_set()
             history[i] |= (int) piece_mask(action.taken);
         }
     }
+
+    Piece taken_piece = state.pack[state.pack.size()-1];
+    byte taken_mask = byte{0};
+    if(will_take()) {
+        taken_mask = piece_mask(taken_piece);
+        taken_mask |= byte{1<<6};
+    }
+
     // borrar las fichas tomadas del oponente
     for(int i = p; i < (int) history.size(); i+=2)
         history[i] &= ~((1<<6)-1);
@@ -136,6 +144,22 @@ bool Domino::place_to_right(const Piece& piece) {
 
     return  piece.first  == state.right ||
             piece.second == state.right;
+}
+
+bool Domino::will_take() {
+    if (state.pack.empty()) {
+        return false;
+    }
+    set<Piece>&hand = state.hands[player()-1];
+    for (auto piece : hand) {
+        if(place_to_left(piece)){
+            return true;
+        }
+        if (place_to_right(piece)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 int Domino::opposite(int number, const Piece& piece) {
