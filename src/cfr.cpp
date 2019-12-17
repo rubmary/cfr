@@ -101,6 +101,8 @@ void cfr_domino(
     )
 {
     using namespace domino;
+    cout << "max_point: " << max_point << endl;
+    cout << "initial_hand: " << initial_hand << endl;
     Domino domino(max_point, initial_hand);
     CFR<State, Action, Properties, InformationSet, Hash> cfr({&domino}, EPS);
     cout << "training..." << endl;

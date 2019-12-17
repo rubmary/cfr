@@ -6,7 +6,7 @@ CXXFLAGS= \
 	-I ./
 GAMES=KuhnPoker OCP Dudo Domino
 DEPS=$(patsubst %, %.o, $(GAMES)) src/games/Game.hpp
-BINARIES=dfs gebr cfr
+BINARIES=dfs gebr cfr count
 TARGETS=targets/
 
 all: dfs cfr gebr count
@@ -42,5 +42,4 @@ initialization:
 
 clean:
 	rm -f *.o
-	cd targets/
-	rm -f $(BINARIES) *.o
+	rm -f $(patsubst %, targets/%, $(BINARIES))

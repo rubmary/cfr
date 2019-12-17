@@ -51,11 +51,11 @@ struct State {
 struct InformationSet {
     vector<short int> history;
     vector<byte> hand;
-    byte piece_taken;
+    byte taken_piece;
     bool operator == (InformationSet const& inf_set) const {
         return  history == inf_set.history &&
                 hand == inf_set.hand &&
-                piece_taken == inf_set.piece_taken;;
+                taken_piece == inf_set.taken_piece;
     }
 };
 
@@ -64,7 +64,7 @@ struct Hash {
         size_t hash = 0;
         boost::hash_range(hash, inf_set.history.begin(), inf_set.history.end());
         boost::hash_range(hash, inf_set.hand.begin(), inf_set.hand.end());
-        boost::hash_combine(hash, inf_set.piece_taken);
+        boost::hash_combine(hash, inf_set.taken_piece);
         return hash;
     }
 };

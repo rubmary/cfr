@@ -113,6 +113,7 @@ InformationSet Domino::information_set()
     byte taken_mask = byte{0};
     if(will_take()) {
         taken_mask = piece_mask(taken_piece);
+        // Indica si tomo pieza o no
         taken_mask |= byte{1<<6};
     }
 
@@ -127,7 +128,7 @@ InformationSet Domino::information_set()
     for (auto piece : state.hands[player_index]) {
         hand[i++] = piece_mask(piece);
     }
-    return InformationSet({history, hand});
+    return InformationSet({history, hand, taken_mask});
 }
 
 bool Domino::place_to_left(const Piece& piece) {
@@ -153,13 +154,13 @@ bool Domino::will_take() {
     set<Piece>&hand = state.hands[player()-1];
     for (auto piece : hand) {
         if(place_to_left(piece)){
-            return true;
+            return false;
         }
         if (place_to_right(piece)) {
-            return true;
+            return false;
         }
     }
-    return false;
+    return true;
 }
 
 int Domino::opposite(int number, const Piece& piece) {
@@ -334,7 +335,6 @@ void Domino::print() {
         cout << "Conjunto de informacion: " << information_set() << endl;
     }
     cout << endl;
-
 }
 
 ostream& operator <<(ostream& os, const byte& b) {
@@ -355,9 +355,10 @@ ostream& operator<<(ostream& os, const InformationSet& I) {
         os << action << ' ';
     }
     os << I.hand.size() << ' ';
-    for (auto card: I.hand) {
-        os << card << ' ';
+    for (auto piece: I.hand) {
+        os << piece << ' ';
     }
+    os << I.taken_piece;
     return os;
 }
 
@@ -371,5 +372,6 @@ istream& operator>>(istream& is, InformationSet& I) {
     I.hand.resize(size);
     for (int i = 0; i < size; i++)
         is >> I.hand[i];
+    is >> I.taken_piece;
     return is;
 }
