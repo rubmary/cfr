@@ -5,7 +5,7 @@ using namespace std;
 #ifndef CLASS_Simulator
 #define CLASS_Simulator
 /**
-* Class GEBR
+* Class Simulator
 * @game:    juego
 * @sigma:   estrategia analizada
 *
@@ -28,7 +28,21 @@ class Simulator {
     void read_sigma(istream& is);
 
     /**
-    * dfs para simular un juego
+    * select_action
+    *
+    * seleccionar accion acorde a una distribucion
+    * de probabilidad
+    *
+    * parametros
+    *   @strategy:  distribucion de probabilidad
+    *
+    * return
+    *   action elegida
+    */
+    int select_action(vector<double>&strategy);
+
+    /**
+    * movimientos recursivos para simular un juego
     */
     double move_recursively();
 

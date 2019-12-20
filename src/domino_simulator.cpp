@@ -16,12 +16,11 @@ void simulator_domino(
     int n
 ) {
     using namespace domino;
-    cout << "(max_point, initial_hand) = (" << max_point << "," << initial_hand << ")";
-    cout << endl;
     Domino domino(max_point, initial_hand);
-    cout << "En construccion" << endl;
     Simulator<State, Action, Properties, InformationSet, Hash>
         simulator(&domino, is_inf_sets, is_strategy);
+    double average_utility = simulator.plays(n);
+    cout << average_utility << endl;
 }
 
 int main(int argc, char **argv) {

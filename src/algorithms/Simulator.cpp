@@ -1,8 +1,8 @@
-// #include <cmath>
-// #include <cstdlib>
-// #include <ctime>
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
 #include <iostream>
-// #include <algorithm>
+#include <algorithm>
 #include "Simulator.hpp"
 using namespace std;
 
@@ -32,12 +32,34 @@ void Simulator<State, Action, Properties, InformationSet, Hash>::read_sigma(istr
 }
 
 template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
+int Simulator<State, Action, Properties, InformationSet, Hash>::select_action(vector<double>&strategy) {
+    double x = ((double) rand() / (RAND_MAX));
+    int N = strategy.size();
+    double cumulative = 0;
+    for (int i = 0; i < N; i++) {
+        if (x < cumulative + strategy[i]) {
+            return i;
+        }
+        cumulative += strategy[i];
+    }
+    return N-1;
+}
+
+template <typename State, typename Action, typename Properties, typename InformationSet, typename Hash>
 double Simulator<State, Action, Properties, InformationSet, Hash>::move_recursively() {
     if(game -> terminal_state()) {
         return game -> utility(1);
     }
+    int information_set_id, action_id, N;
     vector<Action> actions = game -> actions();
-    int action_id = 0; //seleccionar accion
+    N = actions.size();
+    if (N == 1) {
+        action_id = 0;
+    } else {
+        information_set_id = game -> information_set_id();
+        vector<double>&strategy = sigma[information_set_id];
+        action_id = select_action(strategy);
+    }
     auto action = actions[action_id];
     game -> update_state(action);
     return move_recursively();
