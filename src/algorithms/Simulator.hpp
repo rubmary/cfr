@@ -8,7 +8,6 @@ using namespace std;
 * Class GEBR
 * @game:    juego
 * @sigma:   estrategia analizada
-* @N:       numero de conjuntos de informacion
 *
 */
 template <
@@ -21,7 +20,6 @@ template <
 class Simulator {
     Game<State, Action, Properties, InformationSet, Hash> *game;
     vector <vector<double>> sigma;
-    int N;
 
     /**
     * read_sigma

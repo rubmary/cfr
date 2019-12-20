@@ -13,7 +13,7 @@ Simulator<State, Action, Properties, InformationSet, Hash>::Simulator(
     istream& is_strategy
 ) : game(game)
 {
-    int information_sets = game -> discover_information_sets(is_inf_sets);
+    game -> discover_information_sets(is_inf_sets);
     read_sigma(is_strategy);
 }
 

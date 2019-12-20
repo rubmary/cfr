@@ -9,8 +9,8 @@ int total_seconds = 36000;
 #define EPS 1e-5
 
 void simulator_domino(
-    ostream& os_strategy,
-    ostream& os_inf_sets,
+    ifstream &is_inf_sets,
+    ifstream &is_strategy,
     int max_point,
     int initial_hand,
     int n
@@ -20,7 +20,8 @@ void simulator_domino(
     cout << endl;
     Domino domino(max_point, initial_hand);
     cout << "En construccion" << endl;
-    // CFR<State, Action, Properties, InformationSet, Hash> cfr({&domino}, EPS);
+    Simulator<State, Action, Properties, InformationSet, Hash>
+        simulator(&domino, is_inf_sets, is_strategy);
 }
 
 int main(int argc, char **argv) {
@@ -31,6 +32,11 @@ int main(int argc, char **argv) {
         return 0;
     }
 
+    if (argc < 4) {
+        cout << "Debes introducir el numero de puntos y la cantidad de fichas" << endl;
+        return 0;
+    }
+
     int n = atoi(argv[1]);
     string game = "Domino";
     string folder = game;
@@ -38,19 +44,15 @@ int main(int argc, char **argv) {
         string separator = i == 2 ? "/" : "_";
         folder = folder + separator + argv[i];
     }
-    string path_strategy = "results/" + folder + "/strategy.txt";
     string path_inf_sets = "results/" + folder + "/information_sets.txt";
-    ofstream os_strategy(path_strategy.c_str());
-    ofstream os_inf_sets(path_inf_sets.c_str());
+    string path_strategy = "results/" + folder + "/strategy.txt";
+    ifstream is_inf_sets(path_inf_sets.c_str());
+    ifstream is_strategy(path_strategy.c_str());
 
-    if (argc < 4) {
-        cout << "Debes introducir el numero de puntos y la cantidad de fichas" << endl;
-        return 0;
-    }
     int max_point, initial_hand;
     max_point = atoi(argv[2]);
     initial_hand = atoi(argv[3]);
-    simulator_domino(os_strategy, os_inf_sets, max_point, initial_hand, n);
-    os_strategy.close();
-    os_inf_sets.close();
+    simulator_domino(is_inf_sets, is_strategy, max_point, initial_hand, n);
+    is_inf_sets.close();
+    is_strategy.close();
 }
