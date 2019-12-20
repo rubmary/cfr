@@ -6,10 +6,10 @@ CXXFLAGS= \
 	-I ./
 GAMES=KuhnPoker OCP Dudo Domino
 DEPS=$(patsubst %, %.o, $(GAMES)) src/games/Game.hpp
-BINARIES=dfs gebr cfr count
+BINARIES=dfs gebr cfr count domino_simulator
 TARGETS=targets/
 
-all: dfs cfr gebr count
+all: dfs cfr gebr domino_simulator count
 
 %.o: src/games/%.cpp
 	$(CXX) -c $< -o $@ $(CXXFLAGS)
@@ -26,7 +26,10 @@ cfr: $(DEPS) src/cfr.cpp CFR.o
 gebr: $(DEPS) src/gebr.cpp GEBR.o
 	$(CXX) -o $(TARGETS)$@ $^ $(CXXFLAGS)
 
-count: $(DEPS) src/count.cpp GEBR.o
+domino_simulator: $(DEPS) src/domino_simulator.cpp Simulator.o
+	$(CXX) -o $(TARGETS)$@ $^ $(CXXFLAGS)
+
+count: $(DEPS) src/count.cpp
 	$(CXX) -o $(TARGETS)$@ $^ $(CXXFLAGS)
 
 initialization:
