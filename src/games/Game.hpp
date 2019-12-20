@@ -142,7 +142,7 @@ public:
     virtual bool terminal_state() = 0;
 
     /**
-    * Retorna la ganancia del primer jugador
+    * Retorna la ganancia del jugador i
     * dado un estado terminal
     */
     virtual double utility(int i) = 0;
